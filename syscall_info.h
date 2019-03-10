@@ -8,7 +8,9 @@ enum ArgType {
     ARG_STRING,
     ARG_STAT,
     ARG_POLL_FD,
-    ARG_PTR
+    ARG_PTR,
+    ARG_SIGACTION,
+    ARG_INTP
 };
 
 struct SyscallArg {

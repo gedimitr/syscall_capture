@@ -29,4 +29,18 @@ struct SyscallDescription syscall_table[] = {
               {"flags", ARG_INT},
               {"fd", ARG_INT},
               {"offset", ARG_INT}}},
+    {"mprotect", {{"addr", ARG_PTR},
+                  {"len", ARG_INT},
+                  {"prot", ARG_INT}}},
+    {"munmap", {{"addr", ARG_PTR},
+                {"length", ARG_INT}}},
+    {"brk", {{"addr", ARG_PTR}}},
+    {"rt_sigaction", {{"sig", ARG_INT},
+                     {"act", ARG_SIGACTION},
+                     {"oact", ARG_SIGACTION},
+                     {"sigsetsize", ARG_INT}}},
+    {"rt_sigprocmask", {{"how", ARG_INT},
+                        {"set", ARG_INTP},
+                        {"oset", ARG_INTP},
+                        {"sigsetsize", ARG_INT}}}
 };
