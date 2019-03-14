@@ -7,8 +7,9 @@ set(SOURCES
     syscall_capture.cpp
     syscall_info.cpp)
 
+set (CMAKE_CXX_STANDARD 17)
+
 add_library(syscall_capture SHARED ${SOURCES})
-target_link_libraries(syscall_capture -nodefaultlibs -static-libgcc c syscall_intercept)
-set_property(TARGET syscall_capture APPEND PROPERTY COMPILE_FLAGS "-g")
+target_compile_options(syscall_capture PRIVATE -fno-rtti -fno-exceptions -g)
 target_compile_options(syscall_capture PRIVATE -Wall -Wextra -pedantic -Werror)
-set (CMAKE_CXX_STANDARD 11)
+target_link_libraries(syscall_capture -nodefaultlibs c syscall_intercept -Wl,--no-undefined)
