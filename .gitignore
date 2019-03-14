@@ -36,3 +36,6 @@ build/*
 
 # VSCode Directory
 .vscode/*
+
+# Qt Creator project file
+CMakeLists.txt.user
