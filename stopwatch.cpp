@@ -1,14 +1,10 @@
-#include <syscall.h>
-
-#include "libsyscall_intercept_hook_point.h"
 #include "stopwatch.hpp"
 
 namespace {
 
-
 bool querySystemClock(timespec *ts)
 {
-    int res = syscall_no_intercept(SYS_clock_gettime, CLOCK_MONOTONIC_RAW, ts);
+    int res = clock_gettime(CLOCK_MONOTONIC, ts);
     return (res == 0); 
 }
 

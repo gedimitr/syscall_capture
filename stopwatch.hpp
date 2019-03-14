@@ -2,7 +2,7 @@
 #define STOPWATCH_HPP_
 
 #include <cstdint>
-#include <time.h>
+#include <ctime>
 
 class Stopwatch
 {
