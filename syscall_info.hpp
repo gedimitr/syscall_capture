@@ -1,5 +1,5 @@
-#ifndef SYSCALL_INFO
-#define SYSCALL_INFO
+#ifndef SYSCALL_INFO_HPP_
+#define SYSCALL_INFO_HPP_
 
 enum ArgType {
     ARG_UNUSED,
@@ -23,6 +23,6 @@ struct SyscallDescription {
     struct SyscallArg args[6];
 };
 
-extern struct SyscallDescription syscall_table[];
+extern SyscallDescription syscall_table[];
 
 #endif

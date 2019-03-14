@@ -1,6 +1,6 @@
-#include "syscall_info.h"
+#include "syscall_info.hpp"
 
-struct SyscallDescription syscall_table[] = {
+SyscallDescription syscall_table[] = {
     {"read", {{"fd", ARG_INT}, 
               {"buf", ARG_DATA}, 
               {"count", ARG_INT}}},
