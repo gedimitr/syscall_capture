@@ -6,7 +6,8 @@ set(SOURCES
     managed_buffers.cpp
     stopwatch.cpp
     syscall_capture.cpp
-    syscall_info.cpp)
+    syscall_info.cpp
+    thread_id.cpp)
 
 set (CMAKE_CXX_STANDARD 17)
 
