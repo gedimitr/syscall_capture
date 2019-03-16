@@ -1,9 +1,11 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <syscall.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include "libsyscall_intercept_hook_point.h"
+#include "length_recorder.hpp"
+#include "managed_buffers.hpp"
 #include "stopwatch.hpp"
 #include "thread_id.hpp"
 
@@ -29,5 +31,16 @@ void start(void)
 {
     //const char *capture_path = getenv("SYSCALL_CAPTURE_PATH");
 	
+    char buffer[1024];
+    ManagedBuffer manbuf(buffer, 1024);
+    manbuf.writeData("abcd", 4);
+
+    {
+        LengthRecorder<uint8_t> length_recorder(manbuf);
+        manbuf.writeData("efgh", 4);
+    }
+
+    syscall_no_intercept(SYS_write, 1, buffer, 12);
+
 	intercept_hook_point = &hook;
 }
