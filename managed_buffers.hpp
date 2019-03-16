@@ -13,7 +13,9 @@ public:
     bool writeData(const char *in, uint32_t num_bytes);
     bool writePadding(uint8_t padding_level);
 
-    bool setCursor(uint32_t pos);
+    uint32_t getCurrentPosition() const;
+    bool setCurrentPosition(uint32_t pos);
+    bool advance(int32_t diff);
 
 private:
     char *getCurrentWritePointer();

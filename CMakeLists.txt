@@ -5,6 +5,7 @@ project(syscall_capture VERSION 0.0.1 DESCRIPTION "system calls capture")
 set(SOURCES
     managed_buffers.cpp
     stopwatch.cpp
+    scoped_cursor_mover.cpp
     syscall_capture.cpp
     syscall_info.cpp
     thread_id.cpp)

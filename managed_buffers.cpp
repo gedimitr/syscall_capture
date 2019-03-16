@@ -1,4 +1,4 @@
-#include <string.h>
+#include <cstring>
 
 #include "managed_buffers.hpp"
 
@@ -47,6 +47,32 @@ bool ManagedBuffer::writePadding(uint8_t padding_level)
         for (int i = 0; i < num_padding_bytes; i++) {
             m_buffer[m_cur_pos++] = 0;
         }
+        return true;
+    } else {
+        return false;
+    }
+}
+
+uint32_t ManagedBuffer::getCurrentPosition() const
+{
+    return m_cur_pos;
+}
+
+bool ManagedBuffer::setCurrentPosition(uint32_t pos)
+{
+    if (pos < m_capacity) {
+        m_cur_pos = pos;
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool ManagedBuffer::advance(int32_t diff)
+{
+    int64_t new_pos = static_cast<int64_t>(m_cur_pos) + diff;
+    if (new_pos >= 0 && new_pos < m_capacity) {
+        m_cur_pos = static_cast<uint32_t>(new_pos);
         return true;
     } else {
         return false;
