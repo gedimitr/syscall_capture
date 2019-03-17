@@ -38,8 +38,7 @@ LengthRecorder<IntType>::~LengthRecorder()
     IntType length_field = static_cast<IntType>(length);
     length_field -= sizeof(IntType);
 
-    const char *outp = reinterpret_cast<const char *>(&length_field);
-    m_managed_buffer.writeData(outp, sizeof(IntType));
+    m_managed_buffer.writeField(length_field);
 }
 
 #endif

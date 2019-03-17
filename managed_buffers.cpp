@@ -4,15 +4,11 @@
 
 namespace {
 
-static uint8_t calcNumPaddingBytes(uint32_t current_position, uint8_t padding_level)
+uint8_t calcNumPaddingBytes(uint32_t current_position, uint8_t padding_level)
 {
     uint8_t modulo = current_position % padding_level;
-
-    if (modulo) {
-        return padding_level - modulo;
-    } else {
-        return 0;
-    }
+    return modulo ? padding_level - modulo
+                  : 0;
 }
 
 }
@@ -31,7 +27,7 @@ bool ManagedBuffer::hasRoomFor(uint32_t num_bytes) const
 bool ManagedBuffer::writeData(const char *in, uint32_t num_bytes)
 {
     if (hasRoomFor(num_bytes)) {
-        char *outp = getCurrentWritePointer();
+        char *outp = m_buffer + m_cur_pos;
         memcpy(outp, in, num_bytes);
         m_cur_pos += num_bytes;
         return true;
@@ -77,9 +73,4 @@ bool ManagedBuffer::advance(int32_t diff)
     } else {
         return false;
     }
-}
-
-char *ManagedBuffer::getCurrentWritePointer()
-{
-    return m_buffer + m_cur_pos;
 }
