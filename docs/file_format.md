@@ -49,26 +49,41 @@ The file header appears once, at the beginning of the file.
  01234567 89012345 67890123 45678901
 +--------+--------+--------+--------+
 |           Magic Number            |
++--------+--------+--------+--------+
+| Version|  Flags |     Unused      |
++--------+--------+--------+--------+
+|            Process ID             |
 +-----------------------------------+
-|            Header Tag             |
-+-----------------------------------+
-|           Header Length           | Covers all Header IEs below
+|      Variable Header Part Tag     |
++--------+--------+--------+--------+
+|    Variable Header Part Length    | Covers all Header IEs below
++--------+--------+--------+--------+
+|                                   |
+:        Variable Header IE#1       :
+|                                   |
 +-----------------------------------+
 |                                   |
-:            Header IE#1            :
+:        Variable Header IE#2       :
 |                                   |
 +-----------------------------------+
-|                                   |
-:            Header IE#2            :
-|                                   |
-+-----------------------------------+
-
+:                                   :
 /                                   /
-
+:                                   :
 +-----------------------------------+
 |                                   |
-|            Header IE#n            |
+:        Variable Header IE#n       :
 |                                   |
 +-----------------------------------+
-
 ```
+
+### Magic Number
+
+Literal byte sequence that identifies this particular file format, equal to `0x780617a5`
+
+### Version
+
+This single byte fields holds the version used to describe the grammar of the file. Equal to 1 for this specification
+
+### Flags
+
+The flags 
