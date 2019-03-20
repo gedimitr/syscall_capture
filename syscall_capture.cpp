@@ -36,8 +36,7 @@ void start(void)
     char buffer[1024];
     ManagedBuffer manbuf(buffer, 1024);
     
-    HeaderWriter hdr_writer(manbuf);
-    hdr_writer.write();
+    writeFileHeader(manbuf);
 
     writeTlv<uint32_t>(manbuf, 0x0345, 45);
     writeTlv<uint32_t>(manbuf, 0x1890, 99);

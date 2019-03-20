@@ -54,6 +54,9 @@ The file header appears once, at the beginning of the file.
 +--------+--------+--------+--------+
 |            Process ID             |
 +-----------------------------------+
+|             Timestamp             |
+|       (Seconds since Epoch)       |
++-----------------------------------+
 |      Variable Header Part Tag     |
 +--------+--------+--------+--------+
 |    Variable Header Part Length    | Covers all Header IEs below

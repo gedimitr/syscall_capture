@@ -1,3 +1,4 @@
+#include <ctime>
 #include <sys/utsname.h>
 #include <syscall.h>
 
@@ -30,24 +31,36 @@ uint8_t calcHeaderFlags()
     return flags;
 }
 
+uint64_t getSecondsSinceEpoch()
+{
+    timespec ts;
+    int res = clock_gettime(CLOCK_REALTIME, &ts);
+    
+    if (res == 0) {
+        return ts.tv_sec;
+    } else {
+        return -1;
+    }
 }
 
-HeaderWriter::HeaderWriter(ManagedBuffer &managed_buffer) :
-    m_managed_buffer(managed_buffer) { }
+}
 
-void HeaderWriter::write()
+void writeFileHeader(ManagedBuffer &managed_buffer)
 {
-    m_managed_buffer.writeFieldBigEndianUnchecked(HdrMagicNumber);
+    managed_buffer.writeFieldBigEndianUnchecked(HdrMagicNumber);
     
     const uint8_t version = 1;
-    m_managed_buffer.writeFieldUnchecked(version);
+    managed_buffer.writeFieldUnchecked(version);
 
     const uint8_t flags = calcHeaderFlags();
-    m_managed_buffer.writeFieldUnchecked(flags);
+    managed_buffer.writeFieldUnchecked(flags);
 
     // Unused octets
-    m_managed_buffer.writeFieldUnchecked<uint16_t>(0);
+    managed_buffer.writeFieldUnchecked<uint16_t>(0);
 
     uint32_t thread_id = getCurrentThreadId();
-    m_managed_buffer.writeFieldUnchecked(thread_id);
+    managed_buffer.writeFieldUnchecked(thread_id);
+
+    uint64_t sec_since_epoch = getSecondsSinceEpoch();
+    managed_buffer.writeFieldUnchecked(sec_since_epoch);
 }
