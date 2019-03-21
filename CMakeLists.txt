@@ -9,7 +9,8 @@ set(SOURCES
     scoped_cursor_mover.cpp
     syscall_capture.cpp
     syscall_info.cpp
-    thread_id.cpp)
+    thread_id.cpp
+    tlv.cpp)
 
 set (CMAKE_CXX_STANDARD 17)
 

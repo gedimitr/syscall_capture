@@ -4,6 +4,7 @@
 #include <cstdint>
 
 #include "managed_buffers.hpp"
+#include "length_recorder.hpp"
 
 constexpr uint32_t calcBytesAfterPadding(uint32_t num_bytes)
 {
@@ -16,7 +17,7 @@ constexpr bool canFitInShortTlv(uint32_t num_bytes)
 }
 
 template <typename IntType>
-bool writeTlv(ManagedBuffer &managed_buffer, uint32_t tag, IntType value)
+bool writeTlv(ManagedBuffer &managed_buffer, uint16_t tag, IntType value)
 {
     uint32_t space_reqs = 4 + calcBytesAfterPadding(sizeof(IntType));
 
@@ -32,26 +33,7 @@ bool writeTlv(ManagedBuffer &managed_buffer, uint32_t tag, IntType value)
     return true;
 }
 
-bool writeTlv(ManagedBuffer &managed_buffer, uint32_t tag, const char *inp, uint32_t num_bytes)
-{
-    uint32_t space_reqs = 8 + calcBytesAfterPadding(num_bytes);
-
-    if (!managed_buffer.hasRoomFor(space_reqs)) {
-        return false;
-    }
-
-    if (canFitInShortTlv(num_bytes)) {
-        managed_buffer.writeFieldBigEndianUnchecked<uint16_t>(tag);
-        managed_buffer.writeFieldBigEndianUnchecked<uint16_t>(num_bytes);
-    } else {
-        managed_buffer.writeFieldBigEndianUnchecked<uint32_t>(tag);
-        managed_buffer.writeFieldBigEndianUnchecked<uint32_t>(num_bytes);
-    }
-
-    managed_buffer.writeDataUnchecked(inp, num_bytes);
-    managed_buffer.writePaddingUnchecked(4);
-
-    return true;
-}
+bool writeTlv(ManagedBuffer &managed_buffer, uint16_t tag, const char *inp, uint32_t num_bytes);
 
 #endif
+
