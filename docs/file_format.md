@@ -103,13 +103,15 @@ Captured system calls have the following format
 +--------+--------+--------+--------+
 | System Call Num |  Flags | Unused |
 +--------+--------+--------+--------+
+|           Return value            |
+|                                   |
++--------+--------+--------+--------+
+|         Process / Thread ID       |
++--------+--------+--------+--------+
 |            System Call            |
 |          Entry Timestamp          | Nanoseconds from fast clock (reference provided in header)
 +--------+--------+--------+--------+
 |   System Call In Kernel Duration  | Nanoseconds if MSB = 0 / Milliseconds if MSB = 1
-+--------+--------+--------+--------+
-|           Return value            |
-|                                   |
 +--------+--------+--------+--------+
 |            Error Number           |
 +--------+--------+--------+--------+
@@ -135,9 +137,18 @@ Captured system calls have the following format
 
 The flags field is 1 byte long and is numbered as in the header case from B0 (LSB) to B7 (MSB). The bits currently used are:
 
- * Timestamp (T) --- B0
-   Shows whether the System Call Entry Timestamp field is present
- * Duration (D) --- B1
-   Shows whether the System Call In Kernel duration field is present
- * Error number (E) --- B2
-   Shows whether the Error Number field is present
+ * Thread ID (Th) --- B0
+
+   Shows whether the Thread ID field is present. If non-present, the system call is implicitly considered to be invoked by the main Thread, whose ID has been provided in the header.
+ 
+ * Timestamp (Ts) --- B1
+
+   Shows whether the System Call Entry Timestamp field is present.
+
+ * Duration (D) --- B2
+
+   Shows whether the System Call In Kernel duration field is present.
+
+ * Error number (E) --- B3
+
+   Shows whether the Error Number field is present.
