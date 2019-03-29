@@ -3,6 +3,7 @@
 #include <sys/utsname.h>
 #include <syscall.h>
 
+#include "clocks.hpp"
 #include "length_recorder.hpp"
 #include "libsyscall_intercept_hook_point.h"
 #include "thread_id.hpp"
@@ -34,29 +35,17 @@ uint8_t calcHeaderFlags()
     return flags;
 }
 
-uint64_t getSecondsSinceEpoch()
-{
-    timespec ts;
-    int res = clock_gettime(CLOCK_REALTIME, &ts);
-    
-    if (res == 0) {
-        return ts.tv_sec;
-    } else {
-        return -1;
-    }
-}
-
 void writeString(ManagedBuffer &managed_buffer, uint16_t tag, const char *str)
 {
-    uint32_t str_length = strlen(str);
-    writeTlv(managed_buffer, tag, str, str_length);
+    uint64_t str_length = strlen(str);
+    writeTlv(managed_buffer, tag, str, static_cast<uint32_t>(str_length));
 }
 
 void writeUnameStrings(ManagedBuffer &managed_buffer)
 {
     utsname uts_name;
 
-    uint64_t result = syscall_no_intercept(SYS_uname, &uts_name);
+    int64_t result = syscall_no_intercept(SYS_uname, &uts_name);
     if (result != 0) {
         return;
     }
