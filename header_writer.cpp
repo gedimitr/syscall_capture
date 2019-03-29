@@ -81,10 +81,10 @@ void writeFileHeader(ManagedBuffer &managed_buffer)
     // Unused octets
     managed_buffer.writeFieldUnchecked<uint16_t>(0);
 
-    uint32_t thread_id = getCurrentThreadId();
+    int32_t thread_id = getCurrentThreadId();
     managed_buffer.writeFieldUnchecked(thread_id);
 
-    uint64_t sec_since_epoch = getSecondsSinceEpoch();
+    int64_t sec_since_epoch = getSecondsSinceEpoch();
     managed_buffer.writeFieldUnchecked(sec_since_epoch);
 
     writeVariableHeaderPart(managed_buffer);

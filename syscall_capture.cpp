@@ -20,7 +20,7 @@ static int hook(long syscall_number, long arg0, long arg1, long arg2,
 
 	Stopwatch stopwatch;
     *result = syscall_no_intercept(syscall_number, arg0, arg1, arg2, arg3, arg4, arg5);
-    uint64_t nsecs = stopwatch.getNanoseconds();
+    int64_t nsecs = stopwatch.getNanoseconds();
 
     sprintf(buffer, "System Call Number: %ld --- Arg0(%lx) Arg1(%lx) Result(%lx) Duration(%ld) ThreadId(%d)\n", syscall_number, arg0, arg1, *result, nsecs, thread_id);
 	syscall_no_intercept(SYS_write, 1, buffer, strlen(buffer));

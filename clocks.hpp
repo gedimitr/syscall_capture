@@ -4,15 +4,15 @@
 #include <cstdint>
 #include <ctime>
 
-uint64_t getFastclockTimestamp();
-uint64_t getSecondsSinceEpoch();
+int64_t getFastclockTimestamp();
+int64_t getSecondsSinceEpoch();
 
 class Stopwatch
 {
 public:
     Stopwatch();
 
-    uint64_t getNanoseconds() const;
+    int64_t getNanoseconds() const;
 
 private:
     timespec m_start;
