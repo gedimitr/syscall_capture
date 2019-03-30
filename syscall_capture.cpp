@@ -8,6 +8,7 @@
 #include "libsyscall_intercept_hook_point.h"
 #include "length_recorder.hpp"
 #include "managed_buffers.hpp"
+#include "scoped_tlv.hpp"
 #include "thread_id.hpp"
 #include "tlv.hpp"
 
@@ -44,7 +45,7 @@ void start(void)
     manbuf.writeData("abcd", 4);
 
     {
-        LengthRecorder<uint32_t> length_recorder(manbuf);
+        ScopedTlv<uint16_t, uint16_t> tlv(manbuf, 56);
         manbuf.writeData("efgh", 4);
     }
 

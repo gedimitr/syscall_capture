@@ -3,15 +3,25 @@
 
 #include <cstdint>
 
-class ManagedBuffer;
+#include "managed_buffers.hpp"
 
 class ScopedCursorMover
 {
 public:
-    ScopedCursorMover(ManagedBuffer &managed_buffer);
-    ScopedCursorMover(ManagedBuffer &managed_buffer, uint32_t new_pos);
+    ScopedCursorMover(ManagedBuffer &managed_buffer) :
+        m_managed_buffer(managed_buffer),
+        m_original_pos(managed_buffer.getCurrentPosition()) { }
 
-    ~ScopedCursorMover();
+    ScopedCursorMover(ManagedBuffer &managed_buffer, uint32_t new_pos) :
+        ScopedCursorMover(managed_buffer)
+    {
+        m_managed_buffer.setCurrentPosition(new_pos);
+    }
+
+    ~ScopedCursorMover()
+    {
+        m_managed_buffer.setCurrentPosition(m_original_pos);
+    }
 
     ScopedCursorMover(const ScopedCursorMover &) = delete;
     ScopedCursorMover &operator=(const ScopedCursorMover &) = delete;

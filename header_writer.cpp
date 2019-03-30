@@ -4,6 +4,7 @@
 #include <syscall.h>
 
 #include "clocks.hpp"
+#include "information_elements.hpp"
 #include "length_recorder.hpp"
 #include "libsyscall_intercept_hook_point.h"
 #include "thread_id.hpp"
@@ -35,10 +36,11 @@ uint8_t calcHeaderFlags()
     return flags;
 }
 
-void writeString(ManagedBuffer &managed_buffer, uint16_t tag, const char *str)
+void writeZeroTerminatedString(ManagedBuffer &managed_buffer, const char *str)
 {
-    uint64_t str_length = strlen(str);
-    writeTlv(managed_buffer, tag, str, static_cast<uint32_t>(str_length));
+    uint32_t str_length = static_cast<uint32_t>(strlen(str));
+    managed_buffer.writeData(str, str_length);
+    managed_buffer.writeField('\0');
 }
 
 void writeUnameStrings(ManagedBuffer &managed_buffer)
@@ -50,12 +52,14 @@ void writeUnameStrings(ManagedBuffer &managed_buffer)
         return;
     }
 
-    writeString(managed_buffer, Tag::UnameSysname, uts_name.sysname);
-    writeString(managed_buffer, Tag::UnameNodename, uts_name.nodename);
-    writeString(managed_buffer, Tag::UnameRelease, uts_name.release);
-    writeString(managed_buffer, Tag::UnameVersion, uts_name.version);
-    writeString(managed_buffer, Tag::UnameMachine, uts_name.machine);
-    writeString(managed_buffer, Tag::UnameDomainName, uts_name.domainname);
+    ScopedIE scoped_ie(managed_buffer, IETag::HostUname);
+
+    writeZeroTerminatedString(managed_buffer, uts_name.sysname);
+    writeZeroTerminatedString(managed_buffer, uts_name.nodename);
+    writeZeroTerminatedString(managed_buffer, uts_name.release);
+    writeZeroTerminatedString(managed_buffer, uts_name.version);
+    writeZeroTerminatedString(managed_buffer, uts_name.machine);
+    writeZeroTerminatedString(managed_buffer, uts_name.domainname);
 }
 
 void writeVariableHeaderPart(ManagedBuffer &managed_buffer)

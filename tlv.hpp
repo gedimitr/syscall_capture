@@ -35,15 +35,5 @@ bool writeTlv(ManagedBuffer &managed_buffer, uint16_t tag, IntType value)
 
 bool writeTlv(ManagedBuffer &managed_buffer, uint16_t tag, const char *inp, uint32_t num_bytes);
 
-class ScopedTlv
-{
-public:
-    ScopedTlv(ManagedBuffer &managed_buffer, uint16_t tag);
-
-private:
-    ManagedBuffer &m_managed_buffer;
-    LengthRecorder<uint16_t> m_length_recorder;
-};
-
 #endif
 
