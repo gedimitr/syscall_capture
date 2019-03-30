@@ -39,8 +39,8 @@ uint8_t calcHeaderFlags()
 void writeZeroTerminatedString(ManagedBuffer &managed_buffer, const char *str)
 {
     uint32_t str_length = static_cast<uint32_t>(strlen(str));
-    managed_buffer.writeData(str, str_length);
-    managed_buffer.writeField('\0');
+    managed_buffer.writeDataUnchecked(str, str_length);
+    managed_buffer.writeFieldUnchecked('\0');
 }
 
 void writeUnameStrings(ManagedBuffer &managed_buffer)
