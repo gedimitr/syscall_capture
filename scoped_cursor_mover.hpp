@@ -1,5 +1,5 @@
-#ifndef SCOPED_CURSOR_MOVER_HPP_
-#define SCOPED_CURSOR_MOVER_HPP_
+#ifndef SCOPED_CURSOR_MOVER_HPP
+#define SCOPED_CURSOR_MOVER_HPP
 
 #include <cstdint>
 
@@ -26,11 +26,9 @@ public:
     ScopedCursorMover(const ScopedCursorMover &) = delete;
     ScopedCursorMover &operator=(const ScopedCursorMover &) = delete;
 
-    bool setCursor(uint32_t pos);
-
 private:
     ManagedBuffer &m_managed_buffer;
     uint32_t m_original_pos;
 };
 
-#endif
+#endif // SCOPED_CURSOR_MOVER_HPP
