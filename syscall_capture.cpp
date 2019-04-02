@@ -5,6 +5,7 @@
 
 #include "clocks.hpp"
 #include "header_writer.hpp"
+#include "information_elements.hpp"
 #include "libsyscall_intercept_hook_point.h"
 #include "length_recorder.hpp"
 #include "managed_buffers.hpp"
@@ -37,6 +38,11 @@ void start(void)
     char buffer[1024];
     ManagedBuffer manbuf(buffer, 1024);
     
+    {
+        ScopedIE ie(manbuf, 12);
+        manbuf.writeFieldUnchecked((uint16_t)0x9999);
+    }
+
     writeFileHeader(manbuf);
 
     writeTlv<uint32_t>(manbuf, 0x0345, 45);

@@ -32,6 +32,9 @@ public:
     bool setCurrentPosition(uint32_t pos);
     bool advance(int32_t diff);
 
+    ManagedBuffer(const ManagedBuffer &) = delete;
+    ManagedBuffer &operator=(const ManagedBuffer &) = delete;
+
 private:
     void writeBytesUnchecked(uint8_t num_bytes, char value);
 
@@ -53,7 +56,7 @@ public:
     }
 
 private:
-    ManagedBuffer m_managed_buffer;
+    ManagedBuffer &m_managed_buffer;
     uint8_t m_padding_level;
 };
 
