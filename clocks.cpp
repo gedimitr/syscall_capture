@@ -4,6 +4,7 @@
 namespace {
 
 inline const int64_t INVALID_TIME64 = -1;
+inline const int64_t NSECS_PER_SEC = 1'000'000'000L;
 
 bool queryClock(clockid_t clock_type, timespec *ts)
 {
@@ -21,15 +22,15 @@ int64_t calcNanosecondsDifference(const timespec &end, const timespec &start)
     int64_t tv_sec_diff = end.tv_sec - start.tv_sec;
     int64_t tv_nsec_diff = end.tv_nsec - start.tv_nsec;
 
-    return tv_sec_diff * 1'000'000'000 + tv_nsec_diff;
+    return tv_sec_diff * NSECS_PER_SEC + tv_nsec_diff;
 }
 
 int64_t aggregateIntoNanoseconds(const timespec &ts)
 {
-    return ts.tv_sec * 1'000'000'000 + ts.tv_nsec;
+    return ts.tv_sec * NSECS_PER_SEC + ts.tv_nsec;
 }
 
-}
+} // anonymous namespace
 
 int64_t getSecondsSinceEpoch()
 {
