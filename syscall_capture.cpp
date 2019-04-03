@@ -40,7 +40,7 @@ void start(void)
     
     {
         ScopedIE ie(manbuf, 12);
-        manbuf.writeFieldUnchecked((uint16_t)0x9999);
+        manbuf.writeField((uint16_t)0x9999);
     }
 
     writeFileHeader(manbuf);

@@ -38,7 +38,7 @@ LengthRecorder<IntType>::~LengthRecorder()
     IntType length_field = static_cast<IntType>(length);
     length_field -= sizeof(IntType);
 
-    m_managed_buffer.writeFieldUnchecked(length_field);
+    m_managed_buffer.writeField(length_field);
 }
 
 #endif

@@ -25,10 +25,10 @@ bool writeTlv(ManagedBuffer &managed_buffer, uint16_t tag, IntType value)
         return false;
     }
 
-    managed_buffer.writeFieldBigEndianUnchecked<uint16_t>(tag);
-    managed_buffer.writeFieldBigEndianUnchecked<uint16_t>(sizeof(IntType));
-    managed_buffer.writeFieldUnchecked(value);
-    managed_buffer.writePaddingUnchecked(4);
+    managed_buffer.writeField<uint16_t>(tag);
+    managed_buffer.writeField<uint16_t>(sizeof(IntType));
+    managed_buffer.writeField(value);
+    managed_buffer.writePadding(4);
 
     return true;
 }

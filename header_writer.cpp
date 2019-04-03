@@ -39,8 +39,8 @@ uint8_t calcHeaderFlags()
 void writeZeroTerminatedString(ManagedBuffer &managed_buffer, const char *str)
 {
     uint32_t str_length = static_cast<uint32_t>(strlen(str));
-    managed_buffer.writeDataUnchecked(str, str_length);
-    managed_buffer.writeFieldUnchecked('\0');
+    managed_buffer.writeData(str, str_length);
+    managed_buffer.writeField('\0');
 }
 
 void writeUnameStrings(ManagedBuffer &managed_buffer)
@@ -64,7 +64,7 @@ void writeUnameStrings(ManagedBuffer &managed_buffer)
 
 void writeVariableHeaderPart(ManagedBuffer &managed_buffer)
 {
-    managed_buffer.writeFieldBigEndianUnchecked<uint16_t>(Tag::VariableHeaderPart);
+    managed_buffer.writeField<uint16_t>(Tag::VariableHeaderPart);
     LengthRecorder<uint16_t> length_recorder(managed_buffer);
 
     writeUnameStrings(managed_buffer);
@@ -74,22 +74,22 @@ void writeVariableHeaderPart(ManagedBuffer &managed_buffer)
 
 void writeFileHeader(ManagedBuffer &managed_buffer)
 {
-    managed_buffer.writeFieldBigEndianUnchecked(HdrMagicNumber);
+    managed_buffer.writeField(HdrMagicNumber);
     
     const uint8_t version = 1;
-    managed_buffer.writeFieldUnchecked(version);
+    managed_buffer.writeField(version);
 
     const uint8_t flags = calcHeaderFlags();
-    managed_buffer.writeFieldUnchecked(flags);
+    managed_buffer.writeField(flags);
 
     // Unused octets
-    managed_buffer.writeFieldUnchecked<uint16_t>(0);
+    managed_buffer.writeField<uint16_t>(0);
 
     int32_t thread_id = getCurrentThreadId();
-    managed_buffer.writeFieldUnchecked(thread_id);
+    managed_buffer.writeField(thread_id);
 
     int64_t sec_since_epoch = getSecondsSinceEpoch();
-    managed_buffer.writeFieldUnchecked(sec_since_epoch);
+    managed_buffer.writeField(sec_since_epoch);
 
     writeVariableHeaderPart(managed_buffer);
 }
