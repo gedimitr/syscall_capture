@@ -3,6 +3,7 @@
 
 #include "length_recorder.hpp"
 #include "managed_buffers.hpp"
+#include "scoped_padder.hpp"
 
 /*
  * Scoped output of a TLV
