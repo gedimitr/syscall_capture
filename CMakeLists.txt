@@ -6,6 +6,7 @@ set(SOURCES
     clocks.cpp
     header_writer.cpp
     managed_buffers.cpp
+    multi_unit_time.cpp
     syscall_capture.cpp
     syscall_info.cpp
     thread_id.cpp
