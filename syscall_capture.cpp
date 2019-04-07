@@ -1,8 +1,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <new>
 #include <syscall.h>
-#include <unistd.h>
 
 #include "clocks.hpp"
 #include "configuration.hpp"
@@ -15,6 +15,26 @@
 #include "scoped_tlv.hpp"
 #include "thread_id.hpp"
 #include "tlv.hpp"
+
+namespace {
+
+alignas(alignof(Configuration))
+char configuration[sizeof(Configuration)];
+
+alignas(alignof(FileWriter))
+char file_writer[sizeof(FileWriter)];
+
+Configuration *getConfiguration()
+{
+    return reinterpret_cast<Configuration *>(configuration);
+}
+
+FileWriter *getFileWriter()
+{
+    return reinterpret_cast<FileWriter *>(file_writer);
+}
+
+}
 
 static int hook(long syscall_number, long arg0, long arg1, long arg2, 
 	long arg3, long arg4, long arg5, long *result)
@@ -36,28 +56,20 @@ static int hook(long syscall_number, long arg0, long arg1, long arg2,
 static __attribute__((constructor))
 void start(void)
 {
-    Configuration configuration;
-    FileWriter file_writer(configuration);
-    file_writer.openOutputFile();
+    Configuration *configuration = new (getConfiguration()) Configuration;
+    FileWriter *file_writer = new(getFileWriter()) FileWriter(*configuration);
+    file_writer->openOutputFile();
 
-    ManagedBuffer &manbuf = file_writer.getManagedBuffer();
-
-    {
-        ScopedIE ie(manbuf, 12);
-        manbuf.writeField((uint16_t)0x9999);
-    }
+    ManagedBuffer &manbuf = file_writer->getManagedBuffer();
 
     writeFileHeader(manbuf);
 
-    writeTlv<uint32_t>(manbuf, 0x0345, 45);
-    writeTlv<uint32_t>(manbuf, 0x1890, 99);
-
-    manbuf.writeData("abcd", 4);
-
-    {
-        ScopedTlv<uint16_t, uint16_t> tlv(manbuf, 56);
-        manbuf.writeData("efgh", 4);
-    }
-
 	intercept_hook_point = &hook;
+}
+
+static __attribute__((destructor))
+void finish(void)
+{
+    getFileWriter()->~FileWriter();
+    getConfiguration()->~Configuration();
 }
