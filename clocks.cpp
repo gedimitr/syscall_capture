@@ -34,7 +34,7 @@ int64_t aggregateIntoNanoseconds(const timespec &ts)
 
 int64_t getSecondsSinceEpoch()
 {
-    if (timespec ts; clock_gettime(CLOCK_REALTIME, &ts)) {
+    if (timespec ts; queryClock(CLOCK_REALTIME, &ts)) {
         return ts.tv_sec;
     } else {
         return INVALID_TIME64;
