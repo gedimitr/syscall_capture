@@ -59,6 +59,11 @@ void ManagedBuffer::advance(int32_t diff)
     m_cur_pos = static_cast<uint32_t>(new_pos);
 }
 
+const char *ManagedBuffer::getRawBuffer() const
+{
+    return m_buffer;
+}
+
 void ManagedBuffer::writeBytes(uint8_t num_bytes, char value)
 {
     assert(hasRoomFor(num_bytes));

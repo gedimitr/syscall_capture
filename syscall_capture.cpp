@@ -2,8 +2,11 @@
 #include <cstdlib>
 #include <cstring>
 #include <syscall.h>
+#include <unistd.h>
 
 #include "clocks.hpp"
+#include "configuration.hpp"
+#include "file_writer.hpp"
 #include "header_writer.hpp"
 #include "information_elements.hpp"
 #include "libsyscall_intercept_hook_point.h"
@@ -33,11 +36,12 @@ static int hook(long syscall_number, long arg0, long arg1, long arg2,
 static __attribute__((constructor))
 void start(void)
 {
-    //const char *capture_path = getenv("SYSCALL_CAPTURE_PATH");
+    Configuration configuration;
+    FileWriter file_writer(configuration);
+    file_writer.openOutputFile();
 
-    char buffer[1024];
-    ManagedBuffer manbuf(buffer, 1024);
-    
+    ManagedBuffer &manbuf = file_writer.getManagedBuffer();
+
     {
         ScopedIE ie(manbuf, 12);
         manbuf.writeField((uint16_t)0x9999);
@@ -54,8 +58,6 @@ void start(void)
         ScopedTlv<uint16_t, uint16_t> tlv(manbuf, 56);
         manbuf.writeData("efgh", 4);
     }
-
-    syscall_no_intercept(SYS_write, 1, buffer, manbuf.getCurrentPosition());
 
 	intercept_hook_point = &hook;
 }

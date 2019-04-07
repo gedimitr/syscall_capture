@@ -4,6 +4,8 @@ project(syscall_capture VERSION 0.0.1 DESCRIPTION "system calls capture")
 
 set(SOURCES
     clocks.cpp
+    configuration.cpp
+    file_writer.cpp
     header_writer.cpp
     managed_buffers.cpp
     multi_unit_time.cpp

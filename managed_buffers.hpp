@@ -20,6 +20,8 @@ public:
 
     void advance(int32_t diff);
 
+    const char *getRawBuffer() const;
+
     ManagedBuffer(const ManagedBuffer &) = delete;
     ManagedBuffer &operator=(const ManagedBuffer &) = delete;
 
