@@ -15,7 +15,7 @@
 
 namespace {
 
-const uint32_t HdrMagicNumber = 0x780617a5;
+const char HdrMagicString[4] = {'\x78', '\x06', '\x17', '\xa5'};
 
 bool isBigEndian()
 {
@@ -74,7 +74,7 @@ void writeVariableHeaderPart(ManagedBuffer &managed_buffer)
 
 void writeFileHeader(ManagedBuffer &managed_buffer)
 {
-    managed_buffer.writeField(HdrMagicNumber);
+    managed_buffer.writeData(HdrMagicString, sizeof(HdrMagicString));
     
     const uint8_t version = 1;
     managed_buffer.writeField(version);
