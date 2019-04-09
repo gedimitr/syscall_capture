@@ -18,11 +18,10 @@
 
 namespace {
 
-template <class T>
-using AlignedPlaceholder alignas(alignof(T)) = char[sizeof(T)];
+#define AlignedPlaceHolder(T, name) alignas(alignof(T)) char name[sizeof(T)]
 
-AlignedPlaceholder<Configuration> configuration;
-AlignedPlaceholder<FileWriter> file_writer;
+AlignedPlaceHolder(Configuration, configuration);
+AlignedPlaceHolder(FileWriter, file_writer);
 
 Configuration *getConfiguration()
 {
