@@ -18,3 +18,9 @@ int32_t getCurrentThreadId()
     static thread_local int32_t thread_id = queryCurrentThreadId();
     return thread_id;
 }
+
+int32_t getProcessId()
+{
+    int64_t res = syscall_no_intercept(SYS_getpid);
+    return static_cast<int32_t>(res);
+}

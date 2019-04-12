@@ -4,5 +4,6 @@
 #include <cstdint>
 
 int32_t getCurrentThreadId();
+int32_t getProcessId();
 
 #endif

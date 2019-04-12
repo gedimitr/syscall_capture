@@ -12,6 +12,7 @@ class Stopwatch
 public:
     Stopwatch();
 
+    int64_t getStartTimestamp() const;
     int64_t getNanoseconds() const;
 
 private:

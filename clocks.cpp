@@ -55,6 +55,15 @@ Stopwatch::Stopwatch()
     m_valid = queryFastClock(&m_start);
 }
 
+int64_t Stopwatch::getStartTimestamp() const
+{
+    if (m_valid) {
+        return m_start.tv_sec * 1'000'000'000L + m_start.tv_nsec;
+    } else {
+        return INVALID_TIME64;
+    }
+}
+
 int64_t Stopwatch::getNanoseconds() const
 {
     if (!m_valid) {

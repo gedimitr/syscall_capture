@@ -5,12 +5,14 @@ project(syscall_capture VERSION 0.0.1 DESCRIPTION "system calls capture")
 set(SOURCES
     clocks.cpp
     configuration.cpp
+    execution_state.cpp
     file_writer.cpp
     header_writer.cpp
     managed_buffers.cpp
     multi_unit_time.cpp
     syscall_capture.cpp
     syscall_info.cpp
+    syscall_writer.cpp
     thread_id.cpp
     tlv.cpp)
 
