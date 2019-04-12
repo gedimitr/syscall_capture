@@ -8,13 +8,13 @@ jobs:
       - checkout
       - run:
           name: Installing GCC
-          command: 'apt-get update && apt-get install -y gcc g++'
+          command: 'apt-get update && apt-get install -y gcc-8 g++-8'
       - run:
           name: Install CMAKE
-          command: 'apt-get update && apt-get install -y cmake'
+          command: 'wget --quiet https://github.com/Kitware/CMake/releases/download/v3.14.2/cmake-3.14.2-Linux-x86_64.tar.gz && tar -xvf cmake-3.14.2-Linux-x86_64.tar.gz'
       - run:
           name: Creating Build Files
-          command: 'cmake -H. -Bbuild'
+          command: '~/cmake-3.14.2-Linux-x86_64/cmake -H. -Bbuild'
       - run:
           name: Creating Binary Files
-          command: 'cmake --build build'
+          command: '~/cmake-3.14.2-Linux-x86_64/cmake --build build'
