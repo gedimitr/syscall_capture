@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.7)
 
 project(syscall_capture VERSION 0.0.1 DESCRIPTION "system calls capture")
 
