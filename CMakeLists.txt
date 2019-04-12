@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.7)
 
-project(syscall_capture VERSION 0.0.1 DESCRIPTION "system calls capture")
+project(syscall_capture VERSION 0.0.1)
 
 set(SOURCES
     clocks.cpp
