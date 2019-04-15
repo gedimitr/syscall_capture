@@ -64,7 +64,7 @@ int64_t Stopwatch::getStartTimestamp() const
     }
 }
 
-int64_t Stopwatch::getNanoseconds() const
+int64_t Stopwatch::getElapsedNanoseconds() const
 {
     if (!m_valid) {
         return INVALID_TIME64;

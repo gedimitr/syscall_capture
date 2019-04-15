@@ -7,8 +7,8 @@
 #include "information_elements.hpp"
 #include "length_recorder.hpp"
 #include "libsyscall_intercept_hook_point.h"
+#include "segments.hpp"
 #include "thread_id.hpp"
-#include "tags.hpp"
 #include "tlv.hpp"
 
 #include "header_writer.hpp"
@@ -64,9 +64,7 @@ void writeUnameStrings(ManagedBuffer &managed_buffer)
 
 void writeVariableHeaderPart(ManagedBuffer &managed_buffer)
 {
-    managed_buffer.writeField<uint16_t>(Tag::VariableHeaderPart);
-    LengthRecorder<uint16_t> length_recorder(managed_buffer);
-
+    ScopedSegment variable_header_part(managed_buffer, SegmentTag::VariableHeaderPart);
     writeUnameStrings(managed_buffer);
 }
 

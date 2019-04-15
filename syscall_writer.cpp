@@ -5,16 +5,51 @@
 #include "execution_state.hpp"
 #include "file_writer.hpp"
 #include "libsyscall_intercept_hook_point.h"
+#include "multi_unit_time.hpp"
+#include "segments.hpp"
 #include "syscall_record.hpp"
 #include "thread_id.hpp"
 
 #include "syscall_writer.hpp"
 
-SyscallWriter::SyscallWriter(const Configuration &configuration, const ExecutionState &execution_state,
-                             FileWriter &file_writer) :
+namespace {
+
+enum SyscallRecordFlag
+{
+    FLAG_THREAD_ID = 0x01,
+    FLAG_TIMESTAMP = 0x02,
+    FLAG_DURATION = 0x04,
+    FLAG_ERRNO = 0x08
+};
+
+uint8_t encodeFlags(const SyscallRecord &syscall_record)
+{
+    uint8_t flags = 0x00;
+
+    if (syscall_record.thread_id) {
+        flags |= FLAG_THREAD_ID;
+    }
+
+    if (syscall_record.entry_timestamp) {
+        flags |= FLAG_TIMESTAMP;
+    }
+
+    if (syscall_record.syscall_duration) {
+        flags |= FLAG_DURATION;
+    }
+
+    if (syscall_record.errnum) {
+        flags |= FLAG_ERRNO;
+    }
+
+    return flags;
+}
+
+}
+
+SyscallWriter::SyscallWriter(const Configuration &configuration, const ExecutionState &execution_state) :
     m_configuration(configuration),
-    m_execution_state(execution_state),
-    m_file_writer(file_writer) { }
+    m_execution_state(execution_state) { }
 
 SyscallRecord SyscallWriter::invokeAndRecord(int64_t syscall_number, int64_t arg0, int64_t arg1, int64_t arg2, int64_t arg3, int64_t arg4, int64_t arg5)
 {
@@ -40,7 +75,7 @@ SyscallRecord SyscallWriter::invokeAndRecord(int64_t syscall_number, int64_t arg
 
     if (m_configuration.shouldRecordSyscallDuration()) {
         assert(stopwatch);
-        record.syscall_duration = stopwatch->getNanoseconds();
+        record.syscall_duration = stopwatch->getElapsedNanoseconds();
     }
 
     int32_t current_thread_id = getCurrentThreadId();
@@ -49,4 +84,38 @@ SyscallRecord SyscallWriter::invokeAndRecord(int64_t syscall_number, int64_t arg
     }
 
     return record;
+}
+
+void writeSyscall(const SyscallRecord &syscall_record, FileWriter &file_writer)
+{
+    ManagedBuffer &managed_buffer = file_writer.getManagedBuffer();
+    ScopedSegment scoped_segment(managed_buffer, SegmentTag::CapturedSyscall);
+
+    assert(syscall_record.syscall_number <= 0xffff);
+    uint16_t short_syscall_number = static_cast<uint16_t>(syscall_record.syscall_number);
+    managed_buffer.writeField(short_syscall_number);
+
+    uint8_t flags = encodeFlags(syscall_record);
+    managed_buffer.writeField(flags);
+
+    managed_buffer.writeField<uint8_t>(0x00);
+
+    managed_buffer.writeField(syscall_record.result);
+
+    if (syscall_record.thread_id) {
+        managed_buffer.writeField(*syscall_record.thread_id);
+    }
+
+    if (syscall_record.entry_timestamp) {
+        managed_buffer.writeField(*syscall_record.entry_timestamp);
+    }
+
+    if (syscall_record.syscall_duration) {
+        uint32_t multi_unit_time = encodeMultiUnitTime(*syscall_record.syscall_duration);
+        managed_buffer.writeField(multi_unit_time);
+    }
+
+    if (syscall_record.errnum) {
+        managed_buffer.writeField(syscall_record.errnum);
+    }
 }

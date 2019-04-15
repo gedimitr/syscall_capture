@@ -7,9 +7,9 @@
 struct SyscallRecord
 {
     int64_t syscall_number{0};
-    int64_t args[6] = {0, 0, 0, 0, 0, 0};
+    int64_t args[6]{0, 0, 0, 0, 0, 0};
     int64_t result{0};
-    int errnum{0};
+    int32_t errnum{0};
 
     std::optional<int64_t> entry_timestamp;
     std::optional<int64_t> syscall_duration;
