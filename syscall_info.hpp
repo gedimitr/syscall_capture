@@ -1,6 +1,8 @@
 #ifndef SYSCALL_INFO_HPP_
 #define SYSCALL_INFO_HPP_
 
+#include <cstdint>
+
 enum ArgType {
     ARG_UNUSED,
     ARG_INT,
@@ -23,6 +25,10 @@ struct SyscallDescription {
     struct SyscallArg args[6];
 };
 
-extern SyscallDescription syscall_table[];
+extern const SyscallDescription syscall_table[];
+
+int getNumberOfArguments(int64_t syscall_number);
+
+ArgType getSyscallArgType(int64_t syscall_number, int arg_num);
 
 #endif

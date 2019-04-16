@@ -7,6 +7,8 @@
 #include "libsyscall_intercept_hook_point.h"
 #include "multi_unit_time.hpp"
 #include "segments.hpp"
+#include "syscall_args.hpp"
+#include "syscall_info.hpp"
 #include "syscall_record.hpp"
 #include "thread_id.hpp"
 
@@ -43,6 +45,23 @@ uint8_t encodeFlags(const SyscallRecord &syscall_record)
     }
 
     return flags;
+}
+
+void writeSyscallArgument(ManagedBuffer &managed_buffer, const SyscallRecord &syscall_record, int arg_num)
+{
+    ArgType arg_type = getSyscallArgType(syscall_record.syscall_number, arg_num);
+
+    int64_t arg = syscall_record.args[arg_num];
+    switch(arg_type) {
+    case ARG_INT:
+        writeSyscallArgumentInt(managed_buffer, arg);
+        break;
+    case ARG_DATA:
+        writeSyscallArgumentData(managed_buffer, arg, syscall_record.args[arg_num + 1]);
+        break;
+    default:
+        writeSyscallArgumentInt(managed_buffer, arg);
+    }
 }
 
 }
@@ -117,5 +136,9 @@ void writeSyscall(const SyscallRecord &syscall_record, FileWriter &file_writer)
 
     if (syscall_record.errnum) {
         managed_buffer.writeField(syscall_record.errnum);
+    }
+
+    for (int i = 0; i < getNumberOfArguments(syscall_record.syscall_number); i++) {
+        writeSyscallArgument(managed_buffer, syscall_record, i);
     }
 }

@@ -10,6 +10,7 @@ set(SOURCES
     header_writer.cpp
     managed_buffers.cpp
     multi_unit_time.cpp
+    syscall_args.cpp
     syscall_capture.cpp
     syscall_info.cpp
     syscall_writer.cpp

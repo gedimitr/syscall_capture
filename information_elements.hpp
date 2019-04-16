@@ -16,7 +16,7 @@ namespace IETag
 constexpr IETagType HostUname = 0x0001;
 
 // Captured Syscall
-constexpr IETagType ArgUInt = 0x0001;
+constexpr IETagType ArgInt = 0x0001;
 constexpr IETagType ArgFullString = 0x0002;
 constexpr IETagType ArgPartialString = 0x0003;
 }

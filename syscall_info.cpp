@@ -1,6 +1,8 @@
+#include <cassert>
+
 #include "syscall_info.hpp"
 
-SyscallDescription syscall_table[] = {
+const SyscallDescription syscall_table[] = {
     {"read", {{"fd", ARG_INT}, 
               {"buf", ARG_DATA}, 
               {"count", ARG_INT}}},
@@ -44,3 +46,53 @@ SyscallDescription syscall_table[] = {
                         {"oset", ARG_INTP},
                         {"sigsetsize", ARG_INT}}}
 };
+
+namespace {
+
+constexpr int getNumberOfSyscallsDefined()
+{
+    return sizeof(syscall_table) / sizeof(SyscallDescription);
+}
+
+constexpr bool isSyscallDescribed(int64_t syscall_number)
+{
+    return syscall_number <= getNumberOfSyscallsDefined();
+}
+
+constexpr const SyscallDescription &getSyscallDescription(int64_t syscall_number)
+{
+    assert(isSyscallDescribed(syscall_number));
+    return syscall_table[syscall_number - 1];
+}
+
+constexpr int countSyscallArguments(int64_t syscall_number)
+{
+    const SyscallDescription &syscall_descr = getSyscallDescription(syscall_number);
+
+    for (int i = 0; i < 6; i++) {
+        if (syscall_descr.args[i].type == ARG_UNUSED) {
+            return i;
+        }
+    }
+
+    return 6;
+}
+
+}
+
+int getNumberOfArguments(int64_t syscall_number)
+{
+    if (syscall_number > getNumberOfSyscallsDefined()) {
+        return 0;
+    }
+
+    return countSyscallArguments(syscall_number);
+}
+
+ArgType getSyscallArgType(int64_t syscall_number, int arg_num)
+{
+    assert(isSyscallDescribed(syscall_number));
+    const SyscallDescription &syscall_descr = getSyscallDescription(syscall_number);
+
+    return syscall_descr.args[arg_num].type;
+}
