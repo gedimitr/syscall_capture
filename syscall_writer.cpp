@@ -18,15 +18,22 @@ namespace {
 
 enum SyscallRecordFlag
 {
-    FLAG_THREAD_ID = 0x01,
-    FLAG_TIMESTAMP = 0x02,
-    FLAG_DURATION = 0x04,
-    FLAG_ERRNO = 0x08
+    FLAG_RESULT = 0x01,
+    FLAG_THREAD_ID = 0x02,
+    FLAG_TIMESTAMP = 0x04,
+    FLAG_DURATION = 0x08,
+    FLAG_ERRNO = 0x10
 };
+
+#include <syscall.h>
 
 uint8_t encodeFlags(const SyscallRecord &syscall_record)
 {
     uint8_t flags = 0x00;
+
+    if (syscall_record.result != 0) {
+        flags |= FLAG_RESULT;
+    }
 
     if (syscall_record.thread_id) {
         flags |= FLAG_THREAD_ID;
@@ -49,7 +56,11 @@ uint8_t encodeFlags(const SyscallRecord &syscall_record)
 
 void writeSyscallArgument(ManagedBuffer &managed_buffer, const SyscallRecord &syscall_record, int arg_num)
 {
-    ArgType arg_type = getSyscallArgType(syscall_record.syscall_number, arg_num);
+    const SyscallArg *syscall_arg = getSyscallArg(syscall_record.syscall_number, arg_num);
+    if (!syscall_arg) {
+        return;
+    }
+    ArgType arg_type = syscall_arg->type;
 
     int64_t arg = syscall_record.args[arg_num];
     switch(arg_type) {
@@ -57,7 +68,7 @@ void writeSyscallArgument(ManagedBuffer &managed_buffer, const SyscallRecord &sy
         writeSyscallArgumentInt(managed_buffer, arg);
         break;
     case ARG_DATA:
-        writeSyscallArgumentData(managed_buffer, arg, syscall_record.args[arg_num + 1]);
+        writeSyscallArgumentData(managed_buffer, arg, syscall_record.args[syscall_arg->aux_arg]);
         break;
     default:
         writeSyscallArgumentInt(managed_buffer, arg);
@@ -119,7 +130,9 @@ void writeSyscall(const SyscallRecord &syscall_record, FileWriter &file_writer)
 
     managed_buffer.writeField<uint8_t>(0x00);
 
-    managed_buffer.writeField(syscall_record.result);
+    if (syscall_record.result) {
+        managed_buffer.writeField(syscall_record.result);
+    }
 
     if (syscall_record.thread_id) {
         managed_buffer.writeField(*syscall_record.thread_id);

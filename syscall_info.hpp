@@ -16,8 +16,9 @@ enum ArgType {
 };
 
 struct SyscallArg {
-    const char *name;
-    enum ArgType type;
+    const char *name{nullptr};
+    ArgType type{ARG_UNUSED};
+    int aux_arg{-1};
 };
 
 struct SyscallDescription {
@@ -29,6 +30,6 @@ extern const SyscallDescription syscall_table[];
 
 int getNumberOfArguments(int64_t syscall_number);
 
-ArgType getSyscallArgType(int64_t syscall_number, int arg_num);
+const SyscallArg *getSyscallArg(int64_t syscall_number, int arg_num);
 
 #endif

@@ -4,10 +4,10 @@
 
 const SyscallDescription syscall_table[] = {
     {"read", {{"fd", ARG_INT}, 
-              {"buf", ARG_DATA}, 
+              {"buf", ARG_DATA, 2},
               {"count", ARG_INT}}},
     {"write", {{"fd", ARG_INT},
-               {"buf", ARG_DATA},
+               {"buf", ARG_DATA, 2},
                {"count", ARG_INT}}},
     {"open", {{"pathname", ARG_STRING},
               {"flags", ARG_INT},
@@ -59,18 +59,25 @@ constexpr bool isSyscallDescribed(int64_t syscall_number)
     return syscall_number <= getNumberOfSyscallsDefined();
 }
 
-constexpr const SyscallDescription &getSyscallDescription(int64_t syscall_number)
+constexpr const SyscallDescription *getSyscallDescription(int64_t syscall_number)
 {
-    assert(isSyscallDescribed(syscall_number));
-    return syscall_table[syscall_number - 1];
+    if (isSyscallDescribed(syscall_number)) {
+        return &syscall_table[syscall_number];
+    } else {
+        return nullptr;
+    }
 }
 
 constexpr int countSyscallArguments(int64_t syscall_number)
 {
-    const SyscallDescription &syscall_descr = getSyscallDescription(syscall_number);
+    const SyscallDescription *syscall_descr = getSyscallDescription(syscall_number);
+
+    if (syscall_descr == nullptr) {
+        return 0;
+    }
 
     for (int i = 0; i < 6; i++) {
-        if (syscall_descr.args[i].type == ARG_UNUSED) {
+        if (syscall_descr->args[i].type == ARG_UNUSED) {
             return i;
         }
     }
@@ -89,10 +96,12 @@ int getNumberOfArguments(int64_t syscall_number)
     return countSyscallArguments(syscall_number);
 }
 
-ArgType getSyscallArgType(int64_t syscall_number, int arg_num)
+const SyscallArg *getSyscallArg(int64_t syscall_number, int arg_num)
 {
-    assert(isSyscallDescribed(syscall_number));
-    const SyscallDescription &syscall_descr = getSyscallDescription(syscall_number);
-
-    return syscall_descr.args[arg_num].type;
+    const SyscallDescription *syscall_descr = getSyscallDescription(syscall_number);
+    if (syscall_descr) {
+        return &syscall_descr->args[arg_num];
+    } else {
+        return nullptr;
+    }
 }
