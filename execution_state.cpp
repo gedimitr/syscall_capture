@@ -2,7 +2,7 @@
 #include "execution_state.hpp"
 
 ExecutionState::ExecutionState() :
-    m_process_id(getProcessId()) { }
+    m_process_id(getCurrentThreadId()) { }
 
 int32_t ExecutionState::getProcessId()
 {
