@@ -1,20 +1,14 @@
 #include <syscall.h>
-#include <sys/mman.h>
 #include <sys/types.h>
 #include <fcntl.h>
 
 #include "configuration.hpp"
 #include "libsyscall_intercept_hook_point.h"
+#include "memory.hpp"
 
 #include "file_writer.hpp"
 
 namespace {
-
-char *mapMemory(uint32_t size)
-{
-    int64_t res = syscall_no_intercept(SYS_mmap, 0, size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
-    return reinterpret_cast<char *>(res);
-}
 
 int openFileForWriting(const char *path)
 {
@@ -27,7 +21,7 @@ int openFileForWriting(const char *path)
 FileWriter::FileWriter(const Configuration &configuration) :
     m_configuration(configuration),
     m_output_file_fd(-1),
-    m_memory(mapMemory(PAGE_SIZE)),
+    m_memory(static_cast<char *>(mapMemory(PAGE_SIZE))),
     m_managed_buffer(m_memory, PAGE_SIZE) { }
 
 FileWriter::~FileWriter()
