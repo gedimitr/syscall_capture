@@ -97,6 +97,9 @@ SyscallRecord SyscallWriter::invokeAndRecord(int64_t syscall_number, int64_t arg
     if (m_configuration.shouldRecordSyscallEntryTimestamp() ||
         m_configuration.shouldRecordSyscallDuration()) {
         stopwatch = Stopwatch();
+    }
+
+    if (m_configuration.shouldRecordSyscallEntryTimestamp()) {
         record.entry_timestamp = stopwatch->getStartTimestamp();
     }
 
