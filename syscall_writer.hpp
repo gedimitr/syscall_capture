@@ -4,23 +4,19 @@
 #include <cstdint>
 
 class Configuration;
-class ExecutionState;
 class FileWriter;
 class SyscallRecord;
 
 class SyscallWriter
 {
 public:
-    SyscallWriter(const Configuration &configuration, const ExecutionState &execution_state);
+    SyscallWriter(const Configuration &configuration, FileWriter &file_writer);
 
-    SyscallRecord invokeAndRecord(int64_t syscall_number, int64_t arg0, int64_t arg1, int64_t arg2, int64_t arg3,
-                            int64_t arg4, int64_t arg5);
+    void write(const SyscallRecord &syscall_record);
 
 private:
     const Configuration &m_configuration;
-    const ExecutionState &m_execution_state;
+    FileWriter &m_file_writer;
 };
-
-void writeSyscall(const SyscallRecord &syscall_record, FileWriter &file_writer);
 
 #endif // SYSCALL_WRITER_HPP

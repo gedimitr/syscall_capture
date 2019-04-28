@@ -15,6 +15,7 @@
 #include "managed_buffers.hpp"
 #include "scoped_tlv.hpp"
 #include "syscall_record.hpp"
+#include "syscall_recorder.hpp"
 #include "syscall_writer.hpp"
 #include "thread_id.hpp"
 #include "tlv.hpp"
@@ -55,17 +56,20 @@ void outputSyscallToStdout(const SyscallRecord &record)
 
 }
 
-static int hook(long syscall_number, long arg0, long arg1, long arg2, 
-	long arg3, long arg4, long arg5, long *result)
+static int hook(long syscall_number, long arg0, long arg1, long arg2,
+                long arg3, long arg4, long arg5, long *result)
 {
-    SyscallWriter syscall_writer(*getConfiguration(), *getExecutionState());
-    SyscallRecord record = syscall_writer.invokeAndRecord(syscall_number, arg0, arg1, arg2, arg3, arg4, arg5);
+    SyscallRecorder syscall_recorder(*getConfiguration(), *getExecutionState());
+    SyscallRecord record = syscall_recorder.invokeAndRecord(syscall_number, arg0, arg1, arg2, arg3, arg4, arg5);
 
     outputSyscallToStdout(record);
-    writeSyscall(record, *getFileWriter());
+
+    SyscallWriter syscall_writer(*getConfiguration(), *getFileWriter());
+    syscall_writer.write(record);
 
     *result = record.result;
     errno = record.errnum;
+
 	return 0;
 }
 

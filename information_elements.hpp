@@ -2,6 +2,7 @@
 #define INFORMATION_ELEMENTS_HPP
 
 #include <cstdint>
+#include <limits>
 
 #include "scoped_tlv.hpp"
 
@@ -20,5 +21,7 @@ constexpr IETagType ArgInt = 0x0001;
 constexpr IETagType ArgFullString = 0x0002;
 constexpr IETagType ArgPartialString = 0x0003;
 }
+
+constexpr int64_t maxPayloadData = std::numeric_limits<IELengthType>::max();
 
 #endif // INFORMATION_ELEMENTS_HPP

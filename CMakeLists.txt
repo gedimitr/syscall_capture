@@ -14,6 +14,7 @@ set(SOURCES
     syscall_args.cpp
     syscall_capture.cpp
     syscall_info.cpp
+    syscall_recorder.cpp
     syscall_writer.cpp
     thread_id.cpp
     tlv.cpp)
