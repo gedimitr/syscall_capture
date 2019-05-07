@@ -19,6 +19,7 @@ public:
     void setCurrentPosition(uint32_t pos);
 
     void advance(int32_t diff);
+    void reset();
 
     const char *getRawBuffer() const;
 

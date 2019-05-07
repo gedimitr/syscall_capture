@@ -10,6 +10,9 @@
 
 namespace {
 
+static constexpr uint32_t PAGE_SIZE = 1024 * 1024;
+static constexpr uint32_t FLUSH_THRESHOLD = 128 * 1024;
+
 int openFileForWriting(const char *path)
 {
     int64_t res = syscall_no_intercept(SYS_open, path, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
@@ -26,14 +29,7 @@ FileWriter::FileWriter(const Configuration &configuration) :
 
 FileWriter::~FileWriter()
 {
-    if (m_output_file_fd == -1) {
-        return;
-    }
-
-    uint32_t num_bytes = m_managed_buffer.getCurrentPosition();
-    const char *data = m_managed_buffer.getRawBuffer();
-
-    syscall_no_intercept(SYS_write, m_output_file_fd, data, num_bytes);
+    flush();
     syscall_no_intercept(SYS_close, m_output_file_fd);
 }
 
@@ -49,4 +45,30 @@ bool FileWriter::openOutputFile()
 ManagedBuffer &FileWriter::getManagedBuffer()
 {
     return m_managed_buffer;
+}
+
+void FileWriter::lock()
+{
+    // TODO: Implement this when multithreaded capturing is to be supported
+}
+
+void FileWriter::unlock()
+{
+    if (!m_managed_buffer.hasRoomFor(FLUSH_THRESHOLD)) {
+        flush();
+    }
+
+    // TODO: Implement this when multithreaded capturing is to be supported
+}
+
+void FileWriter::flush()
+{
+    if (m_output_file_fd != -1) {
+        uint32_t num_bytes = m_managed_buffer.getCurrentPosition();
+        const char *data = m_managed_buffer.getRawBuffer();
+
+        syscall_no_intercept(SYS_write, m_output_file_fd, data, num_bytes);
+    }
+
+    m_managed_buffer.reset();
 }

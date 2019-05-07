@@ -59,6 +59,11 @@ void ManagedBuffer::advance(int32_t diff)
     m_cur_pos = static_cast<uint32_t>(new_pos);
 }
 
+void ManagedBuffer::reset()
+{
+    m_cur_pos = 0;
+}
+
 const char *ManagedBuffer::getRawBuffer() const
 {
     return m_buffer;

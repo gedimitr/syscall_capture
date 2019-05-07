@@ -2,6 +2,7 @@
 
 #include "configuration.hpp"
 #include "execution_state.hpp"
+#include "file_write_permit.hpp"
 #include "file_writer.hpp"
 #include "multi_unit_time.hpp"
 #include "segments.hpp"
@@ -56,7 +57,9 @@ SyscallWriter::SyscallWriter(const Configuration &configuration, FileWriter &fil
 
 void SyscallWriter::write(const SyscallRecord &syscall_record)
 {
-    ManagedBuffer &managed_buffer = m_file_writer.getManagedBuffer();
+    FileWritePermit permit(m_file_writer);
+
+    ManagedBuffer &managed_buffer = permit.getManagedBuffer();
     ScopedSegment scoped_segment(managed_buffer, SegmentTag::CapturedSyscall);
 
     assert(syscall_record.syscall_number <= 0xffff);

@@ -7,6 +7,7 @@ set(SOURCES
     configuration.cpp
     execution_state.cpp
     file_writer.cpp
+    file_write_permit.cpp
     header_writer.cpp
     managed_buffers.cpp
     memory.cpp
