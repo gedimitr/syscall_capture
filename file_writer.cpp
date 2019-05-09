@@ -24,10 +24,10 @@ int openFileForWriting(const char *path)
 }
 
 FileWriter::FileWriter(const Configuration &configuration) :
-    m_configuration(configuration),
-    m_output_file_fd(INVALID_FD),
-    m_memory(static_cast<char *>(mapMemory(PAGE_SIZE))),
-    m_managed_buffer(m_memory, PAGE_SIZE) { }
+    m_configuration{configuration},
+    m_buffers{PAGE_SIZE, PAGE_SIZE},
+    m_working_buffer{&m_buffers.front()},
+    m_output_file_fd{INVALID_FD} { }
 
 FileWriter::~FileWriter()
 {
@@ -46,7 +46,7 @@ bool FileWriter::openOutputFile()
 
 ManagedBuffer &FileWriter::getManagedBuffer()
 {
-    return m_managed_buffer;
+    return m_buffers.front().getManagedBuffer();
 }
 
 void FileWriter::lock()
@@ -56,7 +56,7 @@ void FileWriter::lock()
 
 void FileWriter::unlock()
 {
-    if (!m_managed_buffer.hasRoomFor(FLUSH_THRESHOLD)) {
+    if (!getManagedBuffer().hasRoomFor(FLUSH_THRESHOLD)) {
         flush();
     }
 
@@ -65,12 +65,13 @@ void FileWriter::unlock()
 
 void FileWriter::flush()
 {
+    ManagedBuffer &managed_buffer = getManagedBuffer();
     if (m_output_file_fd != INVALID_FD) {
-        uint32_t num_bytes = m_managed_buffer.getCurrentPosition();
-        const char *data = m_managed_buffer.getRawBuffer();
+        uint32_t num_bytes = managed_buffer.getCurrentPosition();
+        const char *data = managed_buffer.getRawBuffer();
 
         syscall_no_intercept(SYS_write, m_output_file_fd, data, num_bytes);
     }
 
-    m_managed_buffer.reset();
+    managed_buffer.reset();
 }

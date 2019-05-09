@@ -23,9 +23,6 @@ public:
 
     const char *getRawBuffer() const;
 
-    ManagedBuffer(const ManagedBuffer &) = delete;
-    ManagedBuffer &operator=(const ManagedBuffer &) = delete;
-
 private:
     void writeBytes(uint8_t num_bytes, char value);
 

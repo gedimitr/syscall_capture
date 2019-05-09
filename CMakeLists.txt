@@ -18,7 +18,8 @@ set(SOURCES
     syscall_recorder.cpp
     syscall_writer.cpp
     thread_id.cpp
-    tlv.cpp)
+    tlv.cpp
+    viewed_mapped_memory.cpp)
 
 set (CMAKE_CXX_STANDARD 17)
 

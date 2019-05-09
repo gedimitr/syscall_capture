@@ -3,8 +3,7 @@
 
 #include <array>
 
-#include "managed_buffers.hpp"
-#include "memory.hpp"
+#include "viewed_mapped_memory.hpp"
 
 class Configuration;
 
@@ -25,11 +24,11 @@ private:
     void flush();
 
     const Configuration &m_configuration;
+
+    std::array<ViewedMappedMemory, 2> m_buffers;
+    ViewedMappedMemory *m_working_buffer;
+
     int m_output_file_fd;
-
-    char *m_memory;
-
-    ManagedBuffer m_managed_buffer;
 };
 
 #endif // FILE_WRITER_HPP

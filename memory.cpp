@@ -41,6 +41,12 @@ bool unmapMemory(void *addr, unsigned long length)
     return (res == 0);
 }
 
+MappedMemory::MappedMemory(uint32_t size)
+{
+    m_length = convertToMultiplePageSize(size);
+    m_addr = mapMemory(m_length);
+}
+
 MappedMemory::~MappedMemory()
 {
     if (!isEmpty()) {
