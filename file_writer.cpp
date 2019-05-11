@@ -1,3 +1,5 @@
+#include <array>
+#include <cassert>
 #include <syscall.h>
 #include <sys/types.h>
 #include <fcntl.h>
@@ -5,13 +7,20 @@
 #include "configuration.hpp"
 #include "libsyscall_intercept_hook_point.h"
 #include "memory.hpp"
+#include "segments.hpp"
 
 #include "file_writer.hpp"
 
 namespace {
 
+constexpr uint32_t minimumSegmentSize()
+{
+    return sizeof(SegmentTagType) + sizeof(SegmentLengthType);
+}
+
 static constexpr uint32_t PAGE_SIZE = 1024 * 1024;
-static constexpr uint32_t FLUSH_THRESHOLD = 128 * 1024;
+static constexpr uint32_t FLIP_THRESHOLD = 128 * 1024;
+static constexpr uint32_t FLUSH_THRESHOLD = PAGE_SIZE - minimumSegmentSize();
 
 static constexpr int INVALID_FD = -1;
 
@@ -21,17 +30,35 @@ int openFileForWriting(const char *path)
     return static_cast<int>(res);
 }
 
+void flushBuffer(ManagedBuffer &managed_buffer, int fd)
+{
+    if (fd != INVALID_FD) {
+        uint32_t num_bytes = managed_buffer.getCurrentPosition();
+        const char *data = managed_buffer.getRawBuffer();
+
+        syscall_no_intercept(SYS_write, fd, data, num_bytes);
+    }
+}
+
+void writeFillerSegment(ManagedBuffer &view, uint32_t payload_length)
+{
+    ScopedSegment seg(view, SegmentTag::Filler);
+    view.writeBytes(payload_length, 0);
+}
+
 }
 
 FileWriter::FileWriter(const Configuration &configuration) :
     m_configuration{configuration},
     m_buffers{PAGE_SIZE, PAGE_SIZE},
     m_working_buffer{&m_buffers.front()},
+    m_standby_buffer{&m_buffers.back()},
+    m_flush_pending_working_data{m_working_buffer->getManagedBuffer()},
     m_output_file_fd{INVALID_FD} { }
 
 FileWriter::~FileWriter()
 {
-    flush();
+    flush(false);
     syscall_no_intercept(SYS_close, m_output_file_fd);
 }
 
@@ -46,7 +73,7 @@ bool FileWriter::openOutputFile()
 
 ManagedBuffer &FileWriter::getManagedBuffer()
 {
-    return m_buffers.front().getManagedBuffer();
+    return m_working_buffer->getManagedBuffer();
 }
 
 void FileWriter::lock()
@@ -56,22 +83,66 @@ void FileWriter::lock()
 
 void FileWriter::unlock()
 {
-    if (!getManagedBuffer().hasRoomFor(FLUSH_THRESHOLD)) {
-        flush();
+    if (!getManagedBuffer().hasRoomFor(FLIP_THRESHOLD)) {
+        assert(m_standby_buffer->getManagedBuffer().getCurrentPosition() == 0);
+        flipWorkingBuffer();
+        m_flush_pending_working_data = m_working_buffer->getManagedBuffer();
     }
+
+    if (getTotalDataSize() >= FLUSH_THRESHOLD) {
+        flush(true);
+    }
+
+    m_flush_pending_working_data = m_working_buffer->getManagedBuffer();
 
     // TODO: Implement this when multithreaded capturing is to be supported
 }
 
-void FileWriter::flush()
+void FileWriter::flush(bool add_filler)
 {
-    ManagedBuffer &managed_buffer = getManagedBuffer();
-    if (m_output_file_fd != INVALID_FD) {
-        uint32_t num_bytes = managed_buffer.getCurrentPosition();
-        const char *data = managed_buffer.getRawBuffer();
+    uint32_t flush_pending_data_size = getFlushPendingDataSize();
+    assert(flush_pending_data_size < PAGE_SIZE);
 
-        syscall_no_intercept(SYS_write, m_output_file_fd, data, num_bytes);
+    flushBuffer(m_standby_buffer->getManagedBuffer(), m_output_file_fd);
+    m_standby_buffer->resetView();
+
+    flushBuffer(m_flush_pending_working_data, m_output_file_fd);
+    m_working_buffer->getManagedBuffer().subtract(m_flush_pending_working_data);
+
+    if (add_filler) {
+        uint32_t filler_payload_length = PAGE_SIZE - flush_pending_data_size - minimumSegmentSize();
+        outputFillerSegment(filler_payload_length);
     }
+}
 
-    managed_buffer.reset();
+void FileWriter::flipWorkingBuffer()
+{
+    m_standby_buffer = m_working_buffer;
+    if (m_working_buffer == &m_buffers[0]) {
+        m_working_buffer = &m_buffers[1];
+    } else {
+        m_working_buffer = &m_buffers[0];
+    }
+}
+
+uint32_t FileWriter::getFlushPendingDataSize()
+{
+    uint32_t data_size = m_standby_buffer->getManagedBuffer().getCurrentPosition();
+    data_size += m_flush_pending_working_data.getCurrentPosition();
+
+    return data_size;
+}
+
+uint32_t FileWriter::getTotalDataSize() const
+{
+    return m_standby_buffer->getManagedBuffer().getCurrentPosition() +
+           m_working_buffer->getManagedBuffer().getCurrentPosition();
+}
+
+void FileWriter::outputFillerSegment(uint32_t payload_length)
+{
+    ManagedBuffer view = m_standby_buffer->getManagedBuffer();
+    writeFillerSegment(view, payload_length);
+    flushBuffer(view, m_output_file_fd);
+    m_standby_buffer->resetView();
 }

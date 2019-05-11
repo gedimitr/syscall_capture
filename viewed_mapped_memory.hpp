@@ -13,6 +13,8 @@ public:
 
     ManagedBuffer &getManagedBuffer();
 
+    void resetView();
+
 private:
     MappedMemory m_mapped_memory;
     ManagedBuffer m_managed_buffer;

@@ -41,6 +41,14 @@ void ManagedBuffer::writePadding(uint8_t padding_level)
     writeBytes(num_padding_bytes, PADDING_BYTE);
 }
 
+void ManagedBuffer::writeBytes(uint32_t num_bytes, char value)
+{
+    assert(hasRoomFor(num_bytes));
+    for (uint32_t i = 0; i < num_bytes; i++) {
+        m_buffer[m_cur_pos++] = value;
+    }
+}
+
 uint32_t ManagedBuffer::getCurrentPosition() const
 {
     return m_cur_pos;
@@ -64,15 +72,16 @@ void ManagedBuffer::reset()
     m_cur_pos = 0;
 }
 
+void ManagedBuffer::subtract(const ManagedBuffer &managed_buffer)
+{
+    assert(m_buffer == managed_buffer.getRawBuffer());
+
+    uint32_t num_bytes = managed_buffer.getCurrentPosition();
+    m_buffer += num_bytes;
+    m_capacity -= num_bytes;
+}
+
 const char *ManagedBuffer::getRawBuffer() const
 {
     return m_buffer;
-}
-
-void ManagedBuffer::writeBytes(uint8_t num_bytes, char value)
-{
-    assert(hasRoomFor(num_bytes));
-    for (int i = 0; i < num_bytes; i++) {
-        m_buffer[m_cur_pos++] = value;
-    }
 }

@@ -8,17 +8,17 @@
 
 namespace {
 
-unsigned long getPagesize()
+uint32_t getPagesize()
 {
     static long page_size = sysconf(_SC_PAGESIZE);
-    return static_cast<unsigned long>(page_size);
+    return static_cast<uint32_t>(page_size);
 }
 
-unsigned long convertToMultiplePageSize(unsigned long size)
+uint32_t convertToMultiplePageSize(uint32_t size)
 {
-    unsigned long page_size = getPagesize();
+    uint32_t page_size = getPagesize();
     if (size % page_size) {
-        unsigned long num_pages = (size / page_size) + 1;
+        uint32_t num_pages = (size / page_size) + 1;
         return page_size * num_pages;
     } else {
         return size;
@@ -54,6 +54,11 @@ MappedMemory::~MappedMemory()
     }
 }
 
+uint32_t MappedMemory::getSize() const
+{
+    return m_length;
+}
+
 void *MappedMemory::data()
 {
     return m_addr;
@@ -64,7 +69,7 @@ const void *MappedMemory::data() const
     return m_addr;
 }
 
-bool MappedMemory::allocate(unsigned long size)
+bool MappedMemory::allocate(uint32_t size)
 {
     if (!isEmpty()) {
         free();

@@ -13,10 +13,12 @@ public:
     MappedMemory(uint32_t size);
     ~MappedMemory();
 
+    uint32_t getSize() const;
+
     void *data();
     const void *data() const;
 
-    bool allocate(unsigned long size);
+    bool allocate(uint32_t size);
 
     void free();
 
@@ -27,7 +29,7 @@ public:
 
 private:
     void *m_addr{nullptr};
-    unsigned long m_length{0};
+    uint32_t m_length{0};
 };
 
 #endif // MEMORY_HPP
