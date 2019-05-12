@@ -14,7 +14,7 @@ public:
     void writeField(FieldType value);
     void writeData(const char *in, uint32_t num_bytes);
     void writePadding(uint8_t padding_level);
-    void writeBytes(uint32_t num_bytes, char value);
+    void writeRecurringByte(uint32_t num_bytes, char value);
 
     uint32_t getCurrentPosition() const;
     void setCurrentPosition(uint32_t pos);

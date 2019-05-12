@@ -38,10 +38,10 @@ void ManagedBuffer::writeData(const char *in, uint32_t num_bytes)
 void ManagedBuffer::writePadding(uint8_t padding_level)
 {
     uint8_t num_padding_bytes = calcNumPaddingBytes(m_cur_pos, padding_level);
-    writeBytes(num_padding_bytes, PADDING_BYTE);
+    writeRecurringByte(num_padding_bytes, PADDING_BYTE);
 }
 
-void ManagedBuffer::writeBytes(uint32_t num_bytes, char value)
+void ManagedBuffer::writeRecurringByte(uint32_t num_bytes, char value)
 {
     assert(hasRoomFor(num_bytes));
     for (uint32_t i = 0; i < num_bytes; i++) {

@@ -43,7 +43,7 @@ void flushBuffer(ManagedBuffer &managed_buffer, int fd)
 void writeFillerSegment(ManagedBuffer &view, uint32_t payload_length)
 {
     ScopedSegment seg(view, SegmentTag::Filler);
-    view.writeBytes(payload_length, 0);
+    view.writeRecurringByte(payload_length, 0);
 }
 
 }
