@@ -2,6 +2,10 @@
 #include <limits>
 #include <tuple>
 
+#include <sys/stat.h>
+#include <poll.h>
+#include <signal.h>
+
 #include "configuration.hpp"
 #include "information_elements.hpp"
 #include "managed_buffers.hpp"
@@ -59,6 +63,7 @@ void ArgumentWriter::writeArg(const SyscallRecord &syscall_record, int i)
 
     switch(arg_type) {
     case ARG_INT:
+    case ARG_PTR:
         writeArgInt(arg);
         break;
     case ARG_DATA:
@@ -66,6 +71,15 @@ void ArgumentWriter::writeArg(const SyscallRecord &syscall_record, int i)
         break;
     case ARG_STRING:
         writeArgString(arg);
+        break;
+    case ARG_STAT:
+        writeArgStat(arg);
+        break;
+    case ARG_POLL_FDS:
+        writeArgPollFds(arg, aux_arg);
+        break;
+    case ARG_SIGACTION:
+        writeArgSigAction(arg, aux_arg);
         break;
     default:
         writeArgInt(arg);
@@ -106,4 +120,56 @@ void ArgumentWriter::writeArgString(int64_t arg)
     const char *str = reinterpret_cast<const char *>(arg);
     int64_t length = static_cast<int64_t>(strlen(str));
     writeArgData(arg, length);
+}
+
+void ArgumentWriter::writeArgStat(int64_t arg)
+{
+    ScopedIE ie(m_managed_buffer, IETag::ArgStatStruct);
+
+    struct stat *p_stat = reinterpret_cast<struct stat *>(arg);
+    m_managed_buffer.writeField(p_stat->st_dev);
+    m_managed_buffer.writeField(p_stat->st_ino);
+    m_managed_buffer.writeField(p_stat->st_mode);
+    m_managed_buffer.writeField(p_stat->st_nlink);
+    m_managed_buffer.writeField(p_stat->st_uid);
+    m_managed_buffer.writeField(p_stat->st_gid);
+    m_managed_buffer.writeField(p_stat->st_rdev);
+    m_managed_buffer.writeField(p_stat->st_size);
+    m_managed_buffer.writeField(p_stat->st_blksize);
+    m_managed_buffer.writeField(p_stat->st_blocks);
+    m_managed_buffer.writeField(p_stat->st_atim);
+    m_managed_buffer.writeField(p_stat->st_mtim);
+    m_managed_buffer.writeField(p_stat->st_ctim);
+}
+
+void ArgumentWriter::writeArgPollFds(int64_t arg, int64_t num_fds)
+{
+    ScopedIE ie(m_managed_buffer, IETag::ArgPollFds);
+
+    struct pollfd *p_pollfd = reinterpret_cast<struct pollfd *>(arg);
+    for (int64_t i = 0; i < num_fds; i++) {
+        m_managed_buffer.writeField(p_pollfd->fd);
+        m_managed_buffer.writeField(p_pollfd->events);
+        m_managed_buffer.writeField(p_pollfd->revents);
+        p_pollfd += 1;
+    }
+}
+
+void ArgumentWriter::writeArgSigAction(int64_t arg, int64_t sigsetsize)
+{
+    ScopedIE ie(m_managed_buffer, IETag::ArgSigAction);
+
+    if (arg) {
+        struct sigaction *p_sigaction = reinterpret_cast<struct sigaction *>(arg);
+
+        m_managed_buffer.writeField(p_sigaction->sa_handler);
+        m_managed_buffer.writeField(p_sigaction->sa_sigaction);
+
+        const char *mask_data = reinterpret_cast<const char *>(&p_sigaction->sa_mask);
+        uint32_t mask_size = static_cast<uint32_t>(sigsetsize);
+        m_managed_buffer.writeData(mask_data, mask_size);
+
+        m_managed_buffer.writeField(p_sigaction->sa_flags);
+        m_managed_buffer.writeField(p_sigaction->sa_restorer);
+    }
 }

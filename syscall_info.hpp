@@ -9,7 +9,7 @@ enum ArgType {
     ARG_DATA,
     ARG_STRING,
     ARG_STAT,
-    ARG_POLL_FD,
+    ARG_POLL_FDS,
     ARG_PTR,
     ARG_SIGACTION,
     ARG_INTP
