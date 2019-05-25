@@ -1,3 +1,4 @@
+#include <cstring>
 #include <limits>
 #include <tuple>
 
@@ -63,6 +64,9 @@ void ArgumentWriter::writeArg(const SyscallRecord &syscall_record, int i)
     case ARG_DATA:
         writeArgData(arg, aux_arg);
         break;
+    case ARG_STRING:
+        writeArgString(arg);
+        break;
     default:
         writeArgInt(arg);
     }
@@ -95,4 +99,11 @@ void ArgumentWriter::writeArgData(int64_t arg, int64_t length)
 
     const char *data = reinterpret_cast<const char *>(arg);
     m_managed_buffer.writeData(data, static_cast<uint32_t>(output_length));
+}
+
+void ArgumentWriter::writeArgString(int64_t arg)
+{
+    const char *str = reinterpret_cast<const char *>(arg);
+    int64_t length = static_cast<int64_t>(strlen(str));
+    writeArgData(arg, length);
 }

@@ -19,6 +19,7 @@ private:
 
     void writeArgInt(int64_t arg);
     void writeArgData(int64_t arg, int64_t length);
+    void writeArgString(int64_t arg);
 
     const Configuration &m_configuration;
     ManagedBuffer &m_managed_buffer;
