@@ -36,14 +36,14 @@ uint8_t calcHeaderFlags()
     return flags;
 }
 
-void writeZeroTerminatedString(ManagedBuffer &managed_buffer, const char *str)
+void writeZeroTerminatedString(BufferView &buffer_view, const char *str)
 {
     uint32_t str_length = static_cast<uint32_t>(strlen(str));
-    managed_buffer.writeData(str, str_length);
-    managed_buffer.writeField('\0');
+    buffer_view.writeData(str, str_length);
+    buffer_view.writeField('\0');
 }
 
-void writeUnameStrings(ManagedBuffer &managed_buffer)
+void writeUnameStrings(BufferView &buffer_view)
 {
     utsname uts_name;
 
@@ -52,42 +52,42 @@ void writeUnameStrings(ManagedBuffer &managed_buffer)
         return;
     }
 
-    ScopedIE scoped_ie(managed_buffer, IETag::HostUname);
+    ScopedIE scoped_ie(buffer_view, IETag::HostUname);
 
-    writeZeroTerminatedString(managed_buffer, uts_name.sysname);
-    writeZeroTerminatedString(managed_buffer, uts_name.nodename);
-    writeZeroTerminatedString(managed_buffer, uts_name.release);
-    writeZeroTerminatedString(managed_buffer, uts_name.version);
-    writeZeroTerminatedString(managed_buffer, uts_name.machine);
-    writeZeroTerminatedString(managed_buffer, uts_name.domainname);
+    writeZeroTerminatedString(buffer_view, uts_name.sysname);
+    writeZeroTerminatedString(buffer_view, uts_name.nodename);
+    writeZeroTerminatedString(buffer_view, uts_name.release);
+    writeZeroTerminatedString(buffer_view, uts_name.version);
+    writeZeroTerminatedString(buffer_view, uts_name.machine);
+    writeZeroTerminatedString(buffer_view, uts_name.domainname);
 }
 
-void writeVariableHeaderPart(ManagedBuffer &managed_buffer)
+void writeVariableHeaderPart(BufferView &buffer_view)
 {
-    ScopedSegment variable_header_part(managed_buffer, SegmentTag::VariableHeaderPart);
-    writeUnameStrings(managed_buffer);
+    ScopedSegment variable_header_part(buffer_view, SegmentTag::VariableHeaderPart);
+    writeUnameStrings(buffer_view);
 }
 
 }
 
-void writeFileHeader(ManagedBuffer &managed_buffer)
+void writeFileHeader(BufferView &buffer_view)
 {
-    managed_buffer.writeData(HdrMagicString, sizeof(HdrMagicString));
+    buffer_view.writeData(HdrMagicString, sizeof(HdrMagicString));
     
     const uint8_t version = 1;
-    managed_buffer.writeField(version);
+    buffer_view.writeField(version);
 
     const uint8_t flags = calcHeaderFlags();
-    managed_buffer.writeField(flags);
+    buffer_view.writeField(flags);
 
     // Unused octets
-    managed_buffer.writeField<uint16_t>(0);
+    buffer_view.writeField<uint16_t>(0);
 
     int32_t thread_id = getCurrentThreadId();
-    managed_buffer.writeField(thread_id);
+    buffer_view.writeField(thread_id);
 
     int64_t sec_since_epoch = getSecondsSinceEpoch();
-    managed_buffer.writeField(sec_since_epoch);
+    buffer_view.writeField(sec_since_epoch);
 
-    writeVariableHeaderPart(managed_buffer);
+    writeVariableHeaderPart(buffer_view);
 }

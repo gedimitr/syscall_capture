@@ -1,5 +1,5 @@
 #include "file_writer.hpp"
-#include "managed_buffers.hpp"
+#include "buffer_view.hpp"
 
 #include "file_write_permit.hpp"
 
@@ -14,7 +14,7 @@ FileWritePermit::~FileWritePermit()
     m_file_writer.unlock();
 }
 
-ManagedBuffer &FileWritePermit::getManagedBuffer()
+BufferView &FileWritePermit::getBufferView()
 {
-    return m_file_writer.getManagedBuffer();
+    return m_file_writer.getBufferView();
 }

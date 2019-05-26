@@ -2,7 +2,7 @@
 #define FILE_WRITE_PERMIT_HPP
 
 class FileWriter;
-class ManagedBuffer;
+class BufferView;
 
 class FileWritePermit
 {
@@ -10,7 +10,7 @@ public:
     FileWritePermit(FileWriter &file_writer);
     ~FileWritePermit();
 
-    ManagedBuffer &getManagedBuffer();
+    BufferView &getBufferView();
 
 private:
     FileWriter &m_file_writer;

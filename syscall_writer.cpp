@@ -59,39 +59,39 @@ void SyscallWriter::write(const SyscallRecord &syscall_record)
 {
     FileWritePermit permit(m_file_writer);
 
-    ManagedBuffer &managed_buffer = permit.getManagedBuffer();
-    ScopedSegment scoped_segment(managed_buffer, SegmentTag::CapturedSyscall);
+    BufferView &buffer_view = permit.getBufferView();
+    ScopedSegment scoped_segment(buffer_view, SegmentTag::CapturedSyscall);
 
     assert(syscall_record.syscall_number <= 0xffff);
     uint16_t short_syscall_number = static_cast<uint16_t>(syscall_record.syscall_number);
-    managed_buffer.writeField(short_syscall_number);
+    buffer_view.writeField(short_syscall_number);
 
     uint8_t flags = encodeFlags(syscall_record);
-    managed_buffer.writeField(flags);
+    buffer_view.writeField(flags);
 
-    managed_buffer.writeField<uint8_t>(0x00);
+    buffer_view.writeField<uint8_t>(0x00);
 
     if (syscall_record.result) {
-        managed_buffer.writeField(syscall_record.result);
+        buffer_view.writeField(syscall_record.result);
     }
 
     if (syscall_record.thread_id) {
-        managed_buffer.writeField(*syscall_record.thread_id);
+        buffer_view.writeField(*syscall_record.thread_id);
     }
 
     if (syscall_record.entry_timestamp) {
-        managed_buffer.writeField(*syscall_record.entry_timestamp);
+        buffer_view.writeField(*syscall_record.entry_timestamp);
     }
 
     if (syscall_record.syscall_duration) {
         uint32_t multi_unit_time = encodeMultiUnitTime(*syscall_record.syscall_duration);
-        managed_buffer.writeField(multi_unit_time);
+        buffer_view.writeField(multi_unit_time);
     }
 
     if (syscall_record.errnum) {
-        managed_buffer.writeField(syscall_record.errnum);
+        buffer_view.writeField(syscall_record.errnum);
     }
 
-    ArgumentWriter arg_writer(m_configuration, managed_buffer);
+    ArgumentWriter arg_writer(m_configuration, buffer_view);
     arg_writer.writeArgs(syscall_record);
 }

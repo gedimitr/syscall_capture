@@ -1,8 +1,8 @@
 #ifndef HEADER_WRITER_HPP_
 #define HEADER_WRITER_HPP_
 
-class ManagedBuffer;
+class BufferView;
 
-void  writeFileHeader(ManagedBuffer &managed_buffer);
+void  writeFileHeader(BufferView &buffer_view);
 
 #endif

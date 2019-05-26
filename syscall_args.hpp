@@ -4,13 +4,13 @@
 #include <cstdint>
 
 class Configuration;
-class ManagedBuffer;
+class BufferView;
 class SyscallRecord;
 
 class ArgumentWriter
 {
 public:
-    ArgumentWriter(const Configuration &configuration, ManagedBuffer &managed_buffer);
+    ArgumentWriter(const Configuration &configuration, BufferView &buffer_view);
 
     void writeArgs(const SyscallRecord &syscall_record);
 
@@ -25,7 +25,7 @@ private:
     void writeArgSigAction(int64_t arg, int64_t sigsetsize);
 
     const Configuration &m_configuration;
-    ManagedBuffer &m_managed_buffer;
+    BufferView &m_buffer_view;
 };
 
 #endif // SYSCALL_ARGS_HPP

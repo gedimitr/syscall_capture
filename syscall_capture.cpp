@@ -12,7 +12,7 @@
 #include "information_elements.hpp"
 #include "libsyscall_intercept_hook_point.h"
 #include "length_recorder.hpp"
-#include "managed_buffers.hpp"
+#include "buffer_view.hpp"
 #include "scoped_tlv.hpp"
 #include "syscall_record.hpp"
 #include "syscall_recorder.hpp"
@@ -68,7 +68,7 @@ void start(void)
 
     file_writer->openOutputFile();
 
-    ManagedBuffer &manbuf = file_writer->getManagedBuffer();
+    BufferView &manbuf = file_writer->getBufferView();
 
     writeFileHeader(manbuf);
 

@@ -1,12 +1,12 @@
-#ifndef MANAGED_BUFFERS_HPP_
-#define MANAGED_BUFFERS_HPP_
+#ifndef BUFFER_VIEW_HPP_
+#define BUFFER_VIEW_HPP_
 
 #include <cstdint>
 
-class ManagedBuffer
+class BufferView
 {
 public:
-    ManagedBuffer(char *buffer, uint32_t capacity);
+    BufferView(char *buffer, uint32_t capacity);
 
     bool hasRoomFor(uint32_t num_bytes) const;
 
@@ -22,7 +22,7 @@ public:
     void advance(int32_t diff);
     void reset();
 
-    void subtract(const ManagedBuffer &managed_buffer);
+    void subtract(const BufferView &buffer_view);
 
     const char *getRawBuffer() const;
 
@@ -34,7 +34,7 @@ private:
 
 // Templated Methods Implementation
 template<typename FieldType>
-void ManagedBuffer::writeField(FieldType value)
+void BufferView::writeField(FieldType value)
 {
     char *inp = reinterpret_cast<char *>(&value);
     char *outp = m_buffer + m_cur_pos;

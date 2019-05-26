@@ -4,20 +4,20 @@
 #include <cstdint>
 
 #include "memory.hpp"
-#include "managed_buffers.hpp"
+#include "buffer_view.hpp"
 
 class ViewedMappedMemory
 {
 public:
     ViewedMappedMemory(uint32_t size);
 
-    ManagedBuffer &getManagedBuffer();
+    BufferView &getBufferView();
 
     void resetView();
 
 private:
     MappedMemory m_mapped_memory;
-    ManagedBuffer m_managed_buffer;
+    BufferView m_buffer_view;
 };
 
 #endif // VIEWED_MAPPED_MEMORY_HPP

@@ -3,13 +3,13 @@ cmake_minimum_required(VERSION 3.8)
 project(syscall_capture VERSION 0.0.1)
 
 set(SOURCES
+    buffer_view.cpp
     clocks.cpp
     configuration.cpp
     execution_state.cpp
     file_writer.cpp
     file_write_permit.cpp
     header_writer.cpp
-    managed_buffers.cpp
     memory.cpp
     multi_unit_time.cpp
     syscall_args.cpp

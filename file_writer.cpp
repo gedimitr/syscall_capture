@@ -30,17 +30,17 @@ int openFileForWriting(const char *path)
     return static_cast<int>(res);
 }
 
-void flushBuffer(ManagedBuffer &managed_buffer, int fd)
+void flushBuffer(BufferView &buffer_view, int fd)
 {
     if (fd != INVALID_FD) {
-        uint32_t num_bytes = managed_buffer.getCurrentPosition();
-        const char *data = managed_buffer.getRawBuffer();
+        uint32_t num_bytes = buffer_view.getCurrentPosition();
+        const char *data = buffer_view.getRawBuffer();
 
         syscall_no_intercept(SYS_write, fd, data, num_bytes);
     }
 }
 
-void writeFillerSegment(ManagedBuffer &view, uint32_t payload_length)
+void writeFillerSegment(BufferView &view, uint32_t payload_length)
 {
     ScopedSegment seg(view, SegmentTag::Filler);
     view.writeRecurringByte(payload_length, 0);
@@ -53,7 +53,7 @@ FileWriter::FileWriter(const Configuration &configuration) :
     m_buffers{PAGE_SIZE, PAGE_SIZE},
     m_working_buffer{&m_buffers.front()},
     m_standby_buffer{&m_buffers.back()},
-    m_flush_pending_working_data{m_working_buffer->getManagedBuffer()},
+    m_flush_pending_working_data{m_working_buffer->getBufferView()},
     m_output_file_fd{INVALID_FD} { }
 
 FileWriter::~FileWriter()
@@ -71,9 +71,9 @@ bool FileWriter::openOutputFile()
     return (m_output_file_fd != INVALID_FD);
 }
 
-ManagedBuffer &FileWriter::getManagedBuffer()
+BufferView &FileWriter::getBufferView()
 {
-    return m_working_buffer->getManagedBuffer();
+    return m_working_buffer->getBufferView();
 }
 
 void FileWriter::lock()
@@ -83,17 +83,17 @@ void FileWriter::lock()
 
 void FileWriter::unlock()
 {
-    if (!getManagedBuffer().hasRoomFor(FLIP_THRESHOLD)) {
-        assert(m_standby_buffer->getManagedBuffer().getCurrentPosition() == 0);
+    if (!getBufferView().hasRoomFor(FLIP_THRESHOLD)) {
+        assert(m_standby_buffer->getBufferView().getCurrentPosition() == 0);
         flipWorkingBuffer();
-        m_flush_pending_working_data = m_working_buffer->getManagedBuffer();
+        m_flush_pending_working_data = m_working_buffer->getBufferView();
     }
 
     if (getTotalDataSize() >= FLUSH_THRESHOLD) {
         flush(true);
     }
 
-    m_flush_pending_working_data = m_working_buffer->getManagedBuffer();
+    m_flush_pending_working_data = m_working_buffer->getBufferView();
 
     // TODO: Implement this when multithreaded capturing is to be supported
 }
@@ -103,11 +103,11 @@ void FileWriter::flush(bool add_filler)
     uint32_t flush_pending_data_size = getFlushPendingDataSize();
     assert(flush_pending_data_size < PAGE_SIZE);
 
-    flushBuffer(m_standby_buffer->getManagedBuffer(), m_output_file_fd);
+    flushBuffer(m_standby_buffer->getBufferView(), m_output_file_fd);
     m_standby_buffer->resetView();
 
     flushBuffer(m_flush_pending_working_data, m_output_file_fd);
-    m_working_buffer->getManagedBuffer().subtract(m_flush_pending_working_data);
+    m_working_buffer->getBufferView().subtract(m_flush_pending_working_data);
 
     if (add_filler) {
         uint32_t filler_payload_length = PAGE_SIZE - flush_pending_data_size - minimumSegmentSize();
@@ -127,7 +127,7 @@ void FileWriter::flipWorkingBuffer()
 
 uint32_t FileWriter::getFlushPendingDataSize()
 {
-    uint32_t data_size = m_standby_buffer->getManagedBuffer().getCurrentPosition();
+    uint32_t data_size = m_standby_buffer->getBufferView().getCurrentPosition();
     data_size += m_flush_pending_working_data.getCurrentPosition();
 
     return data_size;
@@ -135,13 +135,13 @@ uint32_t FileWriter::getFlushPendingDataSize()
 
 uint32_t FileWriter::getTotalDataSize() const
 {
-    return m_standby_buffer->getManagedBuffer().getCurrentPosition() +
-           m_working_buffer->getManagedBuffer().getCurrentPosition();
+    return m_standby_buffer->getBufferView().getCurrentPosition() +
+           m_working_buffer->getBufferView().getCurrentPosition();
 }
 
 void FileWriter::outputFillerSegment(uint32_t payload_length)
 {
-    ManagedBuffer view = m_standby_buffer->getManagedBuffer();
+    BufferView view = m_standby_buffer->getBufferView();
     writeFillerSegment(view, payload_length);
     flushBuffer(view, m_output_file_fd);
     m_standby_buffer->resetView();

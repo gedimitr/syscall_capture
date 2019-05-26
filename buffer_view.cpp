@@ -1,7 +1,7 @@
 #include <cassert>
 #include <cstring>
 
-#include "managed_buffers.hpp"
+#include "buffer_view.hpp"
 
 namespace {
 
@@ -16,18 +16,18 @@ uint8_t calcNumPaddingBytes(uint32_t current_position, uint8_t padding_level)
 
 }
 
-ManagedBuffer::ManagedBuffer(char *buffer, uint32_t capacity) :
+BufferView::BufferView(char *buffer, uint32_t capacity) :
     m_buffer(buffer),
     m_capacity(capacity),
     m_cur_pos(0) { }
 
-bool ManagedBuffer::hasRoomFor(uint32_t num_bytes) const
+bool BufferView::hasRoomFor(uint32_t num_bytes) const
 {
     uint32_t avail_space = m_capacity - m_cur_pos;
     return (avail_space >= num_bytes);
 }
 
-void ManagedBuffer::writeData(const char *in, uint32_t num_bytes)
+void BufferView::writeData(const char *in, uint32_t num_bytes)
 {
     assert(hasRoomFor(num_bytes));
     char *outp = m_buffer + m_cur_pos;
@@ -35,13 +35,13 @@ void ManagedBuffer::writeData(const char *in, uint32_t num_bytes)
     m_cur_pos += num_bytes;
 }
 
-void ManagedBuffer::writePadding(uint8_t padding_level)
+void BufferView::writePadding(uint8_t padding_level)
 {
     uint8_t num_padding_bytes = calcNumPaddingBytes(m_cur_pos, padding_level);
     writeRecurringByte(num_padding_bytes, PADDING_BYTE);
 }
 
-void ManagedBuffer::writeRecurringByte(uint32_t num_bytes, char value)
+void BufferView::writeRecurringByte(uint32_t num_bytes, char value)
 {
     assert(hasRoomFor(num_bytes));
     for (uint32_t i = 0; i < num_bytes; i++) {
@@ -49,39 +49,39 @@ void ManagedBuffer::writeRecurringByte(uint32_t num_bytes, char value)
     }
 }
 
-uint32_t ManagedBuffer::getCurrentPosition() const
+uint32_t BufferView::getCurrentPosition() const
 {
     return m_cur_pos;
 }
 
-void ManagedBuffer::setCurrentPosition(uint32_t pos)
+void BufferView::setCurrentPosition(uint32_t pos)
 {
     assert(pos <= m_capacity);
     m_cur_pos = pos;
 }
 
-void ManagedBuffer::advance(int32_t diff)
+void BufferView::advance(int32_t diff)
 {
     int64_t new_pos = static_cast<int64_t>(m_cur_pos) + diff;
     assert(new_pos >= 0 && new_pos <= m_capacity);
     m_cur_pos = static_cast<uint32_t>(new_pos);
 }
 
-void ManagedBuffer::reset()
+void BufferView::reset()
 {
     m_cur_pos = 0;
 }
 
-void ManagedBuffer::subtract(const ManagedBuffer &managed_buffer)
+void BufferView::subtract(const BufferView &buffer_view)
 {
-    assert(m_buffer == managed_buffer.getRawBuffer());
+    assert(m_buffer == buffer_view.getRawBuffer());
 
-    uint32_t num_bytes = managed_buffer.getCurrentPosition();
+    uint32_t num_bytes = buffer_view.getCurrentPosition();
     m_buffer += num_bytes;
     m_capacity -= num_bytes;
 }
 
-const char *ManagedBuffer::getRawBuffer() const
+const char *BufferView::getRawBuffer() const
 {
     return m_buffer;
 }

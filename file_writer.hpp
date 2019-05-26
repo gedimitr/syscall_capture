@@ -15,7 +15,7 @@ public:
 
     bool openOutputFile();
 
-    ManagedBuffer &getManagedBuffer();
+    BufferView &getBufferView();
 
     void lock();
     void unlock();
@@ -34,7 +34,7 @@ private:
     std::array<ViewedMappedMemory, 2> m_buffers;
     ViewedMappedMemory *m_working_buffer;
     ViewedMappedMemory *m_standby_buffer;
-    ManagedBuffer m_flush_pending_working_data;
+    BufferView m_flush_pending_working_data;
 
     int m_output_file_fd;
 };
