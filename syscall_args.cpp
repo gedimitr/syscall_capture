@@ -173,3 +173,12 @@ void ArgumentWriter::writeArgSigAction(int64_t arg, int64_t sigsetsize)
         m_buffer_view.writeField(p_sigaction->sa_restorer);
     }
 }
+
+void ArgumentWriter::writeArgIntP(int64_t arg)
+{
+    ScopedIE ie(m_buffer_view, IETag::ArgIntP);
+
+    uint64_t *p_int = reinterpret_cast<uint64_t *>(arg);
+    m_buffer_view.writeField(p_int);
+    m_buffer_view.writeField(*p_int);
+}

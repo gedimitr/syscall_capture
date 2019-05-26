@@ -23,6 +23,7 @@ constexpr IETagType ArgPartialString = 0x0003;
 constexpr IETagType ArgStatStruct = 0x0004;
 constexpr IETagType ArgPollFds = 0x0005;
 constexpr IETagType ArgSigAction = 0x0006;
+constexpr IETagType ArgIntP = 0x0007;
 
 }
 

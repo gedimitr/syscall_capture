@@ -44,7 +44,19 @@ const SyscallDescription syscall_table[] = {
     {"rt_sigprocmask", {{"how", ARG_INT},
                         {"set", ARG_INTP},
                         {"oset", ARG_INTP},
-                        {"sigsetsize", ARG_INT}}}
+                        {"sigsetsize", ARG_INT}}},
+    {"rt_sigreturn", {{"__unused", ARG_INT}}},
+    {"ioctl", {{"fd", ARG_INT},
+               {"cmd", ARG_INT},
+               {"arg", ARG_INT}}},
+    {"pread64", {{"fd", ARG_INT},
+                 {"buf", ARG_DATA, 2},
+                 {"count", ARG_INT},
+                 {"pos", ARG_INT}}},
+    {"pwrite64", {{"fd", ARG_INT},
+                  {"buf", ARG_DATA, 2},
+                  {"count", ARG_INT},
+                  {"pos", ARG_INT}}}
 };
 
 namespace {

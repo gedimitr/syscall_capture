@@ -23,6 +23,7 @@ private:
     void writeArgStat(int64_t arg);
     void writeArgPollFds(int64_t arg, int64_t num_fds);
     void writeArgSigAction(int64_t arg, int64_t sigsetsize);
+    void writeArgIntP(int64_t arg);
 
     const Configuration &m_configuration;
     BufferView &m_buffer_view;
