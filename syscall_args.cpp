@@ -1,3 +1,4 @@
+#include <cassert>
 #include <cstring>
 #include <limits>
 #include <tuple>
@@ -37,6 +38,20 @@ uint32_t calcDataOutputLength(const Configuration &configuration, uint32_t lengt
     return output_length;
 }
 
+int64_t getAuxData(const SyscallRecord &syscall_record, AuxDataPtr aux_data_ptr)
+{
+    if (aux_data_ptr == AUX_NONE) {
+        return 0;
+    }
+
+    if (aux_data_ptr == AUX_RESULT) {
+        return syscall_record.result;
+    }
+
+    assert(aux_data_ptr >= AUX_ARG0 && aux_data_ptr <= AUX_ARG5);
+    return syscall_record.args[aux_data_ptr];
+}
+
 }
 
 ArgumentWriter::ArgumentWriter(const Configuration &configuration, BufferView &buffer_view) :
@@ -59,7 +74,8 @@ void ArgumentWriter::writeArg(const SyscallRecord &syscall_record, int i)
     ArgType arg_type = syscall_arg->type;
 
     int64_t arg = syscall_record.args[i];
-    int64_t aux_arg = syscall_record.args[syscall_arg->aux_arg];
+    AuxDataPtr aux_data_ptr = syscall_arg->aux_data_ptr;
+    int64_t aux_data = getAuxData(syscall_record, aux_data_ptr);
 
     switch(arg_type) {
     case ARG_INT:
@@ -67,7 +83,7 @@ void ArgumentWriter::writeArg(const SyscallRecord &syscall_record, int i)
         writeArgInt(arg);
         break;
     case ARG_DATA:
-        writeArgData(arg, aux_arg);
+        writeArgData(arg, aux_data);
         break;
     case ARG_STRING:
         writeArgString(arg);
@@ -76,10 +92,10 @@ void ArgumentWriter::writeArg(const SyscallRecord &syscall_record, int i)
         writeArgStat(arg);
         break;
     case ARG_POLL_FDS:
-        writeArgPollFds(arg, aux_arg);
+        writeArgPollFds(arg, aux_data);
         break;
     case ARG_SIGACTION:
-        writeArgSigAction(arg, aux_arg);
+        writeArgSigAction(arg, aux_data);
         break;
     default:
         writeArgInt(arg);
@@ -99,7 +115,11 @@ void ArgumentWriter::writeArgInt(int64_t arg)
 
 void ArgumentWriter::writeArgData(int64_t arg, int64_t length)
 {
-    uint32_t u32length = static_cast<uint32_t>(length);
+    // If the length is a negative number, something wrong has happened and no actual data are conveyed, e.g.
+    // a read syscall has failed and no actual data were read. Handle this as equivalent to 0.
+    uint32_t u32length = length > 0 ? static_cast<uint32_t>(length)
+                                    : 0;
+
     uint32_t output_length = calcDataOutputLength(m_configuration, u32length);
 
     IETagType tag = (output_length == length) ? IETag::ArgFullString

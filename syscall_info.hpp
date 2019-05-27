@@ -15,10 +15,21 @@ enum ArgType {
     ARG_INTP
 };
 
+enum AuxDataPtr {
+    AUX_NONE,
+    AUX_RESULT,
+    AUX_ARG0,
+    AUX_ARG1,
+    AUX_ARG2,
+    AUX_ARG3,
+    AUX_ARG4,
+    AUX_ARG5
+};
+
 struct SyscallArg {
     const char *name{nullptr};
     ArgType type{ARG_UNUSED};
-    int aux_arg{-1};
+    AuxDataPtr aux_data_ptr{AUX_NONE};
 };
 
 struct SyscallDescription {
