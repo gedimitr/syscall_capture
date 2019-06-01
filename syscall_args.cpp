@@ -55,8 +55,8 @@ int64_t getAuxData(const SyscallRecord &syscall_record, AuxDataPtr aux_data_ptr)
 }
 
 ArgumentWriter::ArgumentWriter(const Configuration &configuration, BufferView &buffer_view) :
-    m_configuration(configuration),
-    m_buffer_view(buffer_view) { }
+    m_configuration{configuration},
+    m_buffer_view{buffer_view} { }
 
 void ArgumentWriter::writeArgs(const SyscallRecord &syscall_record)
 {

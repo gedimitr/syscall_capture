@@ -52,8 +52,8 @@ uint8_t encodeFlags(const SyscallRecord &syscall_record)
 }
 
 SyscallWriter::SyscallWriter(const Configuration &configuration, FileWriter &file_writer) :
-    m_configuration(configuration),
-    m_file_writer(file_writer) { }
+    m_configuration{configuration},
+    m_file_writer{file_writer} { }
 
 void SyscallWriter::write(const SyscallRecord &syscall_record)
 {

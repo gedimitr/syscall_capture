@@ -10,8 +10,8 @@
 #include "syscall_recorder.hpp"
 
 SyscallRecorder::SyscallRecorder(const Configuration &configuration, const ExecutionState &execution_state) :
-    m_configuration(configuration),
-    m_execution_state(execution_state) { }
+    m_configuration{configuration},
+    m_execution_state{execution_state} { }
 
 SyscallRecord SyscallRecorder::invokeAndRecord(int64_t syscall_number, int64_t arg0, int64_t arg1, int64_t arg2, int64_t arg3, int64_t arg4, int64_t arg5)
 {

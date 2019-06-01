@@ -17,9 +17,9 @@ uint8_t calcNumPaddingBytes(uint32_t current_position, uint8_t padding_level)
 }
 
 BufferView::BufferView(char *buffer, uint32_t capacity) :
-    m_buffer(buffer),
-    m_capacity(capacity),
-    m_cur_pos(0) { }
+    m_buffer{buffer},
+    m_capacity{capacity},
+    m_cur_pos{0} { }
 
 bool BufferView::hasRoomFor(uint32_t num_bytes) const
 {

@@ -130,7 +130,7 @@ private:
 };
 
 Configuration::ConfigurationLoader::ConfigurationLoader(Configuration &configuration) :
-    m_configuration(configuration) { }
+    m_configuration{configuration} { }
 
 void Configuration::ConfigurationLoader::processString(const std::string_view &conf_string)
 {

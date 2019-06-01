@@ -10,8 +10,8 @@ BufferView getView(MappedMemory &mapped_memory)
 }
 
 ViewedMappedMemory::ViewedMappedMemory(uint32_t size) :
-    m_mapped_memory(size),
-    m_buffer_view(getView(m_mapped_memory)) { }
+    m_mapped_memory{size},
+    m_buffer_view{getView(m_mapped_memory)} { }
 
 BufferView &ViewedMappedMemory::getBufferView()
 {

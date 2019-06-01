@@ -4,7 +4,7 @@
 #include "file_write_permit.hpp"
 
 FileWritePermit::FileWritePermit(FileWriter &file_writer) :
-    m_file_writer(file_writer)
+    m_file_writer{file_writer}
 {
     m_file_writer.lock();
 }
