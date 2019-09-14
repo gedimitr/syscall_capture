@@ -11,7 +11,7 @@ tag and length fields.
 Regarding endianness, all fields are written in native endianness.
 
 If the total number of bytes consisting an Information Element (TLV) are not a multiple of 4, padding bytes are added so that the
-footprint fo the Information Element is divisible by 4 (i.e. is a multiple of 32 bit words).
+footprint of the Information Element is divisible by 4 (i.e. is a multiple of 32 bit words).
 
 The figure in the length field excludes the padding bytes.
 
@@ -30,7 +30,7 @@ The figure in the length field excludes the padding bytes.
 +--------+--------+--------+--------+
 ```
 
-## Header
+## File Header
 
 The file header appears once, at the beginning of the file.
 
@@ -111,7 +111,7 @@ Captured system calls have the following format
 |            System Call            |
 |          Entry Timestamp          | Nanoseconds from fast clock (reference provided in header)
 +--------+--------+--------+--------+
-|   System Call In Kernel Duration  | Nanoseconds if MSB = 0 / Milliseconds if MSB = 1
+|   System Call In Kernel Duration  | Time unit depends on the value of the two MSBs
 +--------+--------+--------+--------+
 |            Error Number           |
 +--------+--------+--------+--------+
@@ -139,7 +139,7 @@ The flags field is 1 byte long and is numbered as in the header case from B0 (LS
 
  * Thread ID (Th) --- B0
 
-   Shows whether the Thread ID field is present. If non-present, the system call is implicitly considered to be invoked by the main Thread, whose ID has been provided in the header.
+   Shows whether the Thread ID field is present. If non-present, the system call is implicitly considered to be invoked by the main Thread, whose ID has been provided in the file header.
  
  * Timestamp (Ts) --- B1
 
