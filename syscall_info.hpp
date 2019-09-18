@@ -16,14 +16,14 @@ enum ArgType {
 };
 
 enum AuxDataPtr {
-    AUX_NONE,
-    AUX_RESULT,
     AUX_ARG0,
     AUX_ARG1,
     AUX_ARG2,
     AUX_ARG3,
     AUX_ARG4,
-    AUX_ARG5
+    AUX_ARG5,
+    AUX_NONE,
+    AUX_RESULT,
 };
 
 struct SyscallArg {
