@@ -10,9 +10,7 @@ public:
 
     const char *getOutputFilePath() const;
 
-    bool shouldRecordSyscallEntryTimestamp() const;
-
-    bool shouldRecordSyscallDuration() const;
+    bool shouldRecordSyscallTimes() const;
 
     bool isMaxCapturedDataLengthDefined() const;
     unsigned int getMaxCapturedDataLength() const;
@@ -22,8 +20,7 @@ public:
 
 private:
     MappedMemory m_output_file_path;
-    bool m_record_syscall_entry_timestamp_option{true};
-    bool m_record_syscall_duration_option{true};
+    bool m_record_syscall_times_option{true};
     unsigned int m_max_captured_data_length{0};
 
     class ConfigurationLoader;

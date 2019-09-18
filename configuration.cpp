@@ -13,7 +13,7 @@ constexpr std::string_view TRUE_STR("true");
 const char *CONFIG_ENVVAR = "SYSCAP_CONF";
 
 constexpr std::string_view OUTPUT_PATH("OUTPUT_PATH");
-constexpr std::string_view RECORD_ENTRY_TIMESTAMP("RECORD_ENTRY_TS");
+constexpr std::string_view RECORD_TIMES("RECORD_TIMES");
 constexpr std::string_view RECORD_DURATION("RECORD_DURATION");
 constexpr std::string_view MAX_DATA_LENGTH("MAX_DATA_LENGTH");
 
@@ -151,10 +151,8 @@ void Configuration::ConfigurationLoader::loadConfigurationKeyValue(const std::st
             memcpy(mem.data(), conf_value.data(), value_length);
             static_cast<char *>(mem.data())[value_length + 1] = '\0';
         }
-    } else if (conf_key == RECORD_ENTRY_TIMESTAMP) {
-        m_configuration.m_record_syscall_entry_timestamp_option = isTrueString(conf_value);
-    } else if (conf_key == RECORD_DURATION) {
-        m_configuration.m_record_syscall_duration_option = isTrueString(conf_value);
+    } else if (conf_key == RECORD_TIMES) {
+        m_configuration.m_record_syscall_times_option = isTrueString(conf_value);
     } else if (conf_key == MAX_DATA_LENGTH) {
         std::optional<long> parsed_int = parseInteger(conf_value);
         if (parsed_int) {
@@ -178,14 +176,9 @@ const char *Configuration::getOutputFilePath() const
     return static_cast<const char *>(m_output_file_path.data());
 }
 
-bool Configuration::shouldRecordSyscallEntryTimestamp() const
+bool Configuration::shouldRecordSyscallTimes() const
 {
-    return m_record_syscall_entry_timestamp_option;
-}
-
-bool Configuration::shouldRecordSyscallDuration() const
-{
-    return m_record_syscall_duration_option;
+    return m_record_syscall_times_option;
 }
 
 bool Configuration::isMaxCapturedDataLengthDefined() const

@@ -26,19 +26,15 @@ SyscallRecord SyscallRecorder::invokeAndRecord(int64_t syscall_number, int64_t a
     record.args[5] = arg5;
 
     std::optional<Stopwatch> stopwatch;
-    if (m_configuration.shouldRecordSyscallEntryTimestamp() ||
-        m_configuration.shouldRecordSyscallDuration()) {
+    if (m_configuration.shouldRecordSyscallTimes()) {
         stopwatch = Stopwatch();
-    }
-
-    if (m_configuration.shouldRecordSyscallEntryTimestamp()) {
         record.entry_timestamp = stopwatch->getStartTimestamp();
     }
 
     record.result = syscall_no_intercept(syscall_number, arg0, arg1, arg2, arg3, arg4, arg5);
     record.errnum = errno;
 
-    if (m_configuration.shouldRecordSyscallDuration()) {
+    if (m_configuration.shouldRecordSyscallTimes()) {
         assert(stopwatch);
         record.syscall_duration = stopwatch->getElapsedNanoseconds();
     }
