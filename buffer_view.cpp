@@ -62,9 +62,9 @@ void BufferView::setCurrentPosition(uint32_t pos)
 
 void BufferView::advance(int32_t diff)
 {
-    int64_t new_pos = static_cast<int64_t>(m_cur_pos) + diff;
+    int64_t new_pos = m_cur_pos + diff;
     assert(new_pos >= 0 && new_pos <= m_capacity);
-    m_cur_pos = static_cast<uint32_t>(new_pos);
+    m_cur_pos = new_pos;
 }
 
 void BufferView::reset()

@@ -9,7 +9,7 @@ bool unmapMemory(void *addr, unsigned long length);
 class MappedMemory
 {
 public:
-    MappedMemory() {};
+    MappedMemory() {}
     MappedMemory(uint32_t size);
     ~MappedMemory();
 

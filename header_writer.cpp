@@ -21,7 +21,7 @@ bool isBigEndian()
 {
     const uint32_t test_value = 0x01020304;
 
-    const char *first_byte = reinterpret_cast<const char *>(&test_value);
+    const uint8_t *first_byte = reinterpret_cast<const uint8_t *>(&test_value);
     return (*first_byte == 0x01);
 }
 
