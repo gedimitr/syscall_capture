@@ -89,5 +89,8 @@ void writeFileHeader(BufferView &buffer_view)
     int64_t sec_since_epoch = getSecondsSinceEpoch();
     buffer_view.writeField(sec_since_epoch);
 
+    int64_t fast_clock_ref = getFastclockTimestamp();
+    buffer_view.writeField(fast_clock_ref);
+
     writeVariableHeaderPart(buffer_view);
 }
