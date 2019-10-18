@@ -106,7 +106,7 @@ void ArgumentWriter::writeArgInt(int64_t arg)
 {
     ScopedIE ie(m_buffer_view, IETag::ArgInt);
     if (canFitIn<int32_t>(arg)) {
-        int32_t short_arg = static_cast<int32_t>(arg);
+        int32_t short_arg = arg;
         m_buffer_view.writeField(short_arg);
     } else {
         m_buffer_view.writeField(arg);
@@ -117,8 +117,7 @@ void ArgumentWriter::writeArgData(int64_t arg, int64_t length)
 {
     // If the length is a negative number, something wrong has happened and no actual data are conveyed, e.g.
     // a read syscall has failed and no actual data were read. Handle this as equivalent to 0.
-    uint32_t u32length = length > 0 ? static_cast<uint32_t>(length)
-                                    : 0;
+    uint32_t u32length = length > 0 ? length : 0;
 
     uint32_t output_length = calcDataOutputLength(m_configuration, u32length);
 
@@ -138,7 +137,7 @@ void ArgumentWriter::writeArgData(int64_t arg, int64_t length)
 void ArgumentWriter::writeArgString(int64_t arg)
 {
     const char *str = reinterpret_cast<const char *>(arg);
-    int64_t length = static_cast<int64_t>(strlen(str));
+    int64_t length = strlen(str);
     writeArgData(arg, length);
 }
 

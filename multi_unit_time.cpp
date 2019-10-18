@@ -48,7 +48,7 @@ constexpr int64_t calcMaxEncodableNanosecondsForUnit(TimeUnit unit)
     return calcNanosecondsPerUnit(unit) * MAX_ENCODED_VALUE;
 }
 
-int64_t convertNanosecondsToUnit(int64_t nsec, TimeUnit unit)
+uint32_t convertNanosecondsToUnit(int64_t nsec, TimeUnit unit)
 {
     return nsec / calcNanosecondsPerUnit(unit);
 }
@@ -58,7 +58,7 @@ uint32_t encodeNanosecondsUsingUnit(int64_t nanoseconds, TimeUnit unit)
     assert(nanoseconds <= calcMaxEncodableNanosecondsForUnit(unit));
 
     uint32_t unit_subfield = encodeTimeUnit(unit);
-    uint32_t value_subfield = static_cast<uint32_t>(convertNanosecondsToUnit(nanoseconds, unit));
+    uint32_t value_subfield = convertNanosecondsToUnit(nanoseconds, unit);
 
     return unit_subfield | value_subfield;
 }

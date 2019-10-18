@@ -26,8 +26,7 @@ static constexpr int INVALID_FD = -1;
 
 int openFileForWriting(const char *path)
 {
-    int64_t res = syscall_no_intercept(SYS_open, path, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-    return static_cast<int>(res);
+    return syscall_no_intercept(SYS_open, path, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
 }
 
 void flushBuffer(BufferView &buffer_view, int fd)

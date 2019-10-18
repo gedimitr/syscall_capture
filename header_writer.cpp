@@ -38,7 +38,7 @@ uint8_t calcHeaderFlags()
 
 void writeZeroTerminatedString(BufferView &buffer_view, const char *str)
 {
-    uint32_t str_length = static_cast<uint32_t>(strlen(str));
+    uint32_t str_length = strlen(str);
     buffer_view.writeData(str, str_length);
     buffer_view.writeField('\0');
 }

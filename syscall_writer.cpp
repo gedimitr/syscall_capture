@@ -63,7 +63,7 @@ void SyscallWriter::write(const SyscallRecord &syscall_record)
     ScopedSegment scoped_segment(buffer_view, SegmentTag::CapturedSyscall);
 
     assert(syscall_record.syscall_number <= 0xffff);
-    uint16_t short_syscall_number = static_cast<uint16_t>(syscall_record.syscall_number);
+    uint16_t short_syscall_number = syscall_record.syscall_number;
     buffer_view.writeField(short_syscall_number);
 
     uint8_t flags = encodeFlags(syscall_record);

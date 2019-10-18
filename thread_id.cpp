@@ -7,8 +7,7 @@ namespace {
 
 int32_t queryCurrentThreadId()
 {
-    int64_t res = syscall_no_intercept(SYS_gettid);
-    return static_cast<int32_t>(res);
+    return syscall_no_intercept(SYS_gettid);
 }
 
 }
@@ -21,6 +20,5 @@ int32_t getCurrentThreadId()
 
 int32_t getProcessId()
 {
-    int64_t res = syscall_no_intercept(SYS_getpid);
-    return static_cast<int32_t>(res);
+    return syscall_no_intercept(SYS_getpid);
 }

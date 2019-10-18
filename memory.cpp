@@ -11,7 +11,7 @@ namespace {
 uint32_t getPagesize()
 {
     static long page_size = sysconf(_SC_PAGESIZE);
-    return static_cast<uint32_t>(page_size);
+    return page_size;
 }
 
 uint32_t convertToMultiplePageSize(uint32_t size)

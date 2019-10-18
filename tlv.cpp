@@ -9,7 +9,7 @@ bool writeTlv(BufferView &buffer_view, uint16_t tag, const char *inp, uint32_t n
     }
 
     if (canFitInShortTlv(num_bytes)) {
-        uint16_t num_bytes_short = static_cast<uint16_t>(num_bytes);
+        uint16_t num_bytes_short = num_bytes;
         buffer_view.writeField<uint16_t>(tag);
         buffer_view.writeField<uint16_t>(num_bytes_short);
     } else {
