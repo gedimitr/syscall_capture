@@ -18,8 +18,7 @@ enum SyscallRecordFlag
     FLAG_RESULT = 0x01,
     FLAG_THREAD_ID = 0x02,
     FLAG_TIMESTAMP = 0x04,
-    FLAG_DURATION = 0x08,
-    FLAG_ERRNO = 0x10
+    FLAG_DURATION = 0x08
 };
 
 uint8_t encodeFlags(const SyscallRecord &syscall_record)
@@ -42,10 +41,6 @@ uint8_t encodeFlags(const SyscallRecord &syscall_record)
         flags |= FLAG_DURATION;
     }
 
-    if (syscall_record.errnum) {
-        flags |= FLAG_ERRNO;
-    }
-
     return flags;
 }
 
@@ -63,7 +58,7 @@ void SyscallWriter::write(const SyscallRecord &syscall_record)
     ScopedSegment scoped_segment(buffer_view, SegmentTag::CapturedSyscall);
 
     assert(syscall_record.syscall_number <= 0xffff);
-    uint16_t short_syscall_number = syscall_record.syscall_number;
+    uint16_t short_syscall_number = static_cast<uint16_t>(syscall_record.syscall_number);
     buffer_view.writeField(short_syscall_number);
 
     uint8_t flags = encodeFlags(syscall_record);
@@ -86,10 +81,6 @@ void SyscallWriter::write(const SyscallRecord &syscall_record)
     if (syscall_record.syscall_duration) {
         uint32_t multi_unit_time = encodeMultiUnitTime(*syscall_record.syscall_duration);
         buffer_view.writeField(multi_unit_time);
-    }
-
-    if (syscall_record.errnum) {
-        buffer_view.writeField(syscall_record.errnum);
     }
 
     ArgumentWriter arg_writer(m_configuration, buffer_view);

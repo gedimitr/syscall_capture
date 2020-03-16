@@ -32,7 +32,6 @@ SyscallRecord SyscallRecorder::invokeAndRecord(int64_t syscall_number, int64_t a
     }
 
     record.result = syscall_no_intercept(syscall_number, arg0, arg1, arg2, arg3, arg4, arg5);
-    record.errnum = errno;
 
     if (m_configuration.shouldRecordSyscallTimes()) {
         assert(stopwatch);

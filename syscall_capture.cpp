@@ -54,7 +54,6 @@ static int hook(long syscall_number, long arg0, long arg1, long arg2,
     syscall_writer.write(record);
 
     *result = record.result;
-    errno = record.errnum;
 
 	return 0;
 }
