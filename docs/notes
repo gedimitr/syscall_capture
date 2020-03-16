@@ -1,0 +1,8 @@
+# Define the env var that configures the system call capture
+export SYSCAP_CONF="OUTPUT_PATH=/home/gedimitr/syscalls.dat:RECORD_TIMES=true"
+
+# Capture the system calls invoked by the ls tool
+LD_PRELOAD=/home/gedimitr/Playground/syscall_capture/build/libsyscall_capture.so ls -l
+
+# Debug a system call capturing session for ls
+INTERCEPT_HOOK_CMDLINE_FILTER=ls LD_PRELOAD=/home/gedimitr/Playground/syscall_capture/build/libsyscall_capture.so gdb ls
