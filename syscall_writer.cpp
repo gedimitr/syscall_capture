@@ -4,7 +4,6 @@
 #include "execution_state.hpp"
 #include "file_write_permit.hpp"
 #include "file_writer.hpp"
-#include "multi_unit_time.hpp"
 #include "segments.hpp"
 #include "syscall_args.hpp"
 #include "syscall_record.hpp"
@@ -79,8 +78,8 @@ void SyscallWriter::write(const SyscallRecord &syscall_record)
     }
 
     if (syscall_record.syscall_duration) {
-        uint32_t multi_unit_time = encodeMultiUnitTime(syscall_record.syscall_duration.value());
-        buffer_view.writeField(multi_unit_time);
+        float float_duration = static_cast<float>(syscall_record.syscall_duration.value());
+        buffer_view.writeField(float_duration);
     }
 
     ArgumentWriter arg_writer(m_configuration, buffer_view);

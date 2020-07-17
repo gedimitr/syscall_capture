@@ -11,7 +11,6 @@ set(SOURCES
     file_write_permit.cpp
     header_writer.cpp
     memory.cpp
-    multi_unit_time.cpp
     syscall_args.cpp
     syscall_capture.cpp
     syscall_info.cpp
