@@ -38,4 +38,4 @@ build/*
 .vscode/*
 
 # Qt Creator project file
-CMakeLists.txt.user
+CMakeLists.txt.user*
