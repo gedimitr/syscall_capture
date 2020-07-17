@@ -71,15 +71,15 @@ void SyscallWriter::write(const SyscallRecord &syscall_record)
     }
 
     if (syscall_record.thread_id) {
-        buffer_view.writeField(*syscall_record.thread_id);
+        buffer_view.writeField(syscall_record.thread_id.value());
     }
 
     if (syscall_record.entry_timestamp) {
-        buffer_view.writeField(*syscall_record.entry_timestamp);
+        buffer_view.writeField(syscall_record.entry_timestamp.value());
     }
 
     if (syscall_record.syscall_duration) {
-        uint32_t multi_unit_time = encodeMultiUnitTime(*syscall_record.syscall_duration);
+        uint32_t multi_unit_time = encodeMultiUnitTime(syscall_record.syscall_duration.value());
         buffer_view.writeField(multi_unit_time);
     }
 
